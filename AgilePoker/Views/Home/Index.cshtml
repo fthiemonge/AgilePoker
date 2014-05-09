@@ -1,0 +1,43 @@
+﻿@model AgilePoker.Models.UserRegistration
+@{
+    ViewBag.Title = "Registration";
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>@ViewBag.Title</h1>
+            </hgroup>
+            
+        </div>
+    </section>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    @Html.ValidationSummary()
+
+    @Html.LabelFor(model => model.UserPreferredName)
+    @Html.TextBoxFor(model => model.UserPreferredName)
+
+
+    
+    
+    if (Model.ExistingRoomNames.Any())
+    {
+        <h3>Join an Existing Room</h3>
+        @Html.LabelFor(model => model.ExistingRoomNames)
+        @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
+        <br/><br />
+        <input type="submit" value="Join Room" name="action:JoinRoom"/>
+    }
+
+    <h3>Create your own room</h3>
+    @Html.LabelFor(model => model.NewRoomName)
+    @Html.TextBoxFor(model => model.NewRoomName)
+    @Html.LabelFor(model => model.NewRoomDeck)
+    @Html.DropDownListFor(model => model.NewRoomDeck, @Model.Decks)
+    <br /><br />
+    <input type="submit" value="Create Room" name="action:CreateRoom"/>
+}
