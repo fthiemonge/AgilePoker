@@ -21,6 +21,7 @@ namespace AgilePoker.Controllers
         [MultipleButton(Name = "action", Argument = "JoinRoom")]
         public ActionResult JoinRoom(UserRegistration model)
         {
+            SetUserPreferredNameInCookie(model.UserPreferredName);
             AddUserToRoom(model.SelectedExistingRoomName, model.UserPreferredName);
             return EnterRoom(model.SelectedExistingRoomName);
         }
@@ -41,6 +42,7 @@ namespace AgilePoker.Controllers
 
             if (ModelState.IsValid)
             {
+                SetUserPreferredNameInCookie(model.UserPreferredName);
                 CreateRoom(model.NewRoomName, model.NewRoomDeck, model.UserPreferredName);
                 return EnterRoom(model.NewRoomName);
             }
@@ -111,8 +113,21 @@ namespace AgilePoker.Controllers
 
         private string GetUserPreferredNameFromCookie()
         {
-            var username = Request.Cookies["UserPreferredName"];
-            return username == null || username.Value == null ? User.Identity.Name.Split('\\')[1] : username.Value;
+            var cookie = Request.Cookies["AgilePoker"];
+            return cookie == null || cookie["PreferredName"] == null ? User.Identity.Name.Split('\\')[1] : cookie["PreferredName"];
+        }
+
+        private void SetUserPreferredNameInCookie(string preferredName)
+        {
+            if (preferredName == null)
+            {
+                throw new ArgumentNullException("preferredName");
+            }
+
+            var cookie = new HttpCookie("AgilePoker");
+            cookie["PreferredName"] = preferredName;
+            cookie.Expires = DateTime.Now.AddDays(60);
+            HttpContext.Response.Cookies.Add(cookie);
         }
     }
 }
