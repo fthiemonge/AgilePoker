@@ -15,7 +15,9 @@
          <br/>
      }
 
-    <!-- TODO: Popupate dropdown from Deck, display card based on selected value, etc. -->
+    <!-- TODO: Need to displa ywhat users have submitted selections, button (only visible to Agile Master) that allows him/her to
+        flip over all the selections, button (visible to agile master) allowing him/her to clear the voting,
+        ability to have all this pushed to the UI via SignalR, etc -->
     @Html.LabelFor(model => model.SelectedCard)
     @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
     <br/>
