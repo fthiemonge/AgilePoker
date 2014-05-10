@@ -49,6 +49,7 @@ namespace AgilePoker.Controllers
 
             model.UserPreferredName = GetUserPreferredNameFromCookie();
             model.ExistingRoomNames = GetExistingRoomNames();
+            Session["CurrentRoomName"] = model.NewRoomName;
             return View("Index", model);
         }
 
@@ -58,6 +59,20 @@ namespace AgilePoker.Controllers
                 {
                     PokerRoom = GetExistingRooms().First(x => x.Name == roomName)
                 };
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            Session["CurrentRoomName"] = roomName;
+            return View("Room", model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "SelectCard")]
+        public ActionResult SelectCard(Room model)
+        {
+            // TODO: Handle if session expired, etc.
+            var roomName = (string) Session["CurrentRoomName"];
+            model.PokerRoom = GetExistingRooms().First(x => x.Name == roomName);
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            model.SelectedCard = model.PlayingCards.First(x => x.Value == model.SelectedCardValue);
             return View("Room", model);
         }
 
@@ -95,6 +110,11 @@ namespace AgilePoker.Controllers
                                         PreferredName = userPreferredName, 
                                         UniqueName = User.Identity.Name
                                     }
+                            },
+                        AgileMasterUser = new AgilePokerUser
+                            {
+                                PreferredName = userPreferredName,
+                                UniqueName = User.Identity.Name
                             }
                     });
 

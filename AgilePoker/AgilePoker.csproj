@@ -244,6 +244,15 @@
     <Content Include="Images\Standard_Twenty.jpg" />
     <Content Include="Images\Standard_Two.jpg" />
     <Content Include="Images\Standard_Zero.jpg" />
+    <Content Include="Images\TeeShirt_Coffee.jpg" />
+    <Content Include="Images\TeeShirt_Infinity.jpg" />
+    <Content Include="Images\TeeShirt_L.jpg" />
+    <Content Include="Images\TeeShirt_M.jpg" />
+    <Content Include="Images\TeeShirt_Question.jpg" />
+    <Content Include="Images\TeeShirt_S.jpg" />
+    <Content Include="Images\TeeShirt_XL.jpg" />
+    <Content Include="Images\TeeShirt_XS.jpg" />
+    <Content Include="Images\TeeShirt_XXL.jpg" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

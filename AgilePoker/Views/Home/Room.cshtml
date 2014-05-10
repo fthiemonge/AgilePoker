@@ -1,16 +1,28 @@
 ﻿@model AgilePoker.Models.Room
 @{
-    ViewBag.Title = "Room";
+    ViewBag.Title = @Model.PokerRoom.Name;
 }
 
 <hgroup class="title">
-    <h1>@ViewBag.Title</h1>
+    <h1>@Model.PokerRoom.Name</h1>
 </hgroup>
 
-<h1>@Model.PokerRoom.Name</h1>
+@using (Html.BeginForm())
+{
+    if (Model.SelectedCard != null)
+     {
+         <img src="@Url.Content(@Model.SelectedCard.PictureUrl)" title="@Model.SelectedCard.ToolTip" alt="@Model.SelectedCard.ToolTip"/>
+         <br/>
+     }
+
+    <!-- TODO: Popupate dropdown from Deck, display card based on selected value, etc. -->
+    @Html.LabelFor(model => model.SelectedCard)
+    @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
+    <br/>
+    <br/>
+    <input type="submit" value="Select Card" name="action:SelectCard"/>
     
-<!-- TODO: POpupate dropdown from Deck, display card based on selected value, etc. -->
-
-
+    @Html.HiddenFor(model => model.PokerRoom)
+}
 
 

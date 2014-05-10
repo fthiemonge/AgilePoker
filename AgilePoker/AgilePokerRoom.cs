@@ -7,5 +7,6 @@ namespace AgilePoker
         public string Name { get; set; }
         public Deck Deck { get; set; }
         public List<AgilePokerUser> Users { get; set; }
+        public AgilePokerUser AgileMasterUser { get; set; }
     }
 }
