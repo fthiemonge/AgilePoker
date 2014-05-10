@@ -6,25 +6,33 @@
 <hgroup class="title">
     <h1>@Model.PokerRoom.Name</h1>
 </hgroup>
+<div class="row">
+    <div class="col-md-5 col-sm-5">
+        @using (Html.BeginForm())
+        {
+            if (Model.SelectedCard != null)
+            {
+                <img src="@Url.Content(@Model.SelectedCard.PictureUrl)" title="@Model.SelectedCard.ToolTip" alt="@Model.SelectedCard.ToolTip"/>
+                <br/>
+            }
 
-@using (Html.BeginForm())
-{
-    if (Model.SelectedCard != null)
-     {
-         <img src="@Url.Content(@Model.SelectedCard.PictureUrl)" title="@Model.SelectedCard.ToolTip" alt="@Model.SelectedCard.ToolTip"/>
-         <br/>
-     }
-
-    <!-- TODO: Need to displa ywhat users have submitted selections, button (only visible to Agile Master) that allows him/her to
-        flip over all the selections, button (visible to agile master) allowing him/her to clear the voting,
-        ability to have all this pushed to the UI via SignalR, etc -->
-    @Html.LabelFor(model => model.SelectedCard)
-    @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
+            <!-- TODO: Need to displa ywhat users have submitted selections, button (only visible to Agile Master) that allows him/her to
+                flip over all the selections, button (visible to agile master) allowing him/her to clear the voting,
+                ability to have all this pushed to the UI via SignalR, etc -->
+            @Html.LabelFor(model => model.SelectedCard)<br/>
+            @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
+            <br/>
+            <br/>
+            <input type="submit" value="Vote!" name="action:SelectCard"/>    
+        }
+    </div>
     <br/>
-    <br/>
-    <input type="submit" value="Select Card" name="action:SelectCard"/>
-    
-    @Html.HiddenFor(model => model.PokerRoom)
-}
-
+    <div class="col-md-7 col-sm-7">
+        <label>Players</label><br/>
+            @foreach (var user in Model.PokerRoom.Users)
+            {
+                @user.PreferredName<br />
+            }
+    </div>
+</div>
 
