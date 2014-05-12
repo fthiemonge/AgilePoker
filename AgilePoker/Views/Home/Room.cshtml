@@ -85,7 +85,7 @@
 <script src="../../Scripts/jquery.signalR-2.0.3.min.js"></script>
 <script src="signalr/hubs"></script>
 <script type="text/javascript">
-    $(function () {
+    $(function() {
 
         var agilePokerHub = $.connection.AgilePokerHub;
         var tableName = '@Model.PokerRoom.TableName';
@@ -95,47 +95,55 @@
 
         var playerHands = '@Model.Hands';
 
-        $.connection.hub.start(function () {
+        $.connection.hub.start(function() {
             // TODO: Get groups working correctly
             agilePokerHub.server.join(tableName);
         });
 
         function init() {
             alert("Init() Called!");
-            agilePokerHub.server.getAllHands(tableName).done(function (hands) {
+            agilePokerHub.server.getAllHands(tableName).done(function(hands) {
                 updateHands(hands);
             });
         }
 
-        agilePokerHub.client.broadcastPokerHands = function (hands) {
+        agilePokerHub.client.broadcastPokerHands = function(hands) {
             alert("broadcastPokerHands " + hands.length);
             updateHands(hands);
         };
 
         $.connection.hub.start().done(function() {
             $('#action:SelectCard').click(playHand());
-            
+
             // TODO: Do we need to call init() here?
             init();
         });
-        
+
         function playHand() {
             agilePokerHub.server.playHand(tableName, '@User.Identity.Name', $('#SelectedCardValue').val());
         }
-        
+
         function updateHands(hands) {
             alert("updateHands 1");
             // TODO: Update hands panel based on data hands collection
             playerHands = hands;
             $updateTableBody.empty();
-            $.each(playerHands, function () {
+            $.each(playerHands, function() {
                 alert("updateHands 3");
                 if (item != undefined) {
                     alert("hand 1!");
-                    $updateTableBody.append(rowTemplate.replace('{Player}', this.PreferredName).replace(('{Hand}', this.SelectedCard.ToolTip)));
+                    $updateTableBody.append(rowTemplate.replace('{Player}', this.UserPreferredName).replace('{Hand}', getHandHtml(this.Hand)));
                     alert("hand 2!");
                 }
             });
+        }
+
+        function getHandHtml(hand) {
+            if (hand == undefined) {
+                return "No Vote";
+            }
+            
+            return "<img src='" + hand.PictureUrl + "' title='" + hand.ToolTip + "' alt='" + hand.ToolTip + "' width='30'/>";
         }
     });
 </script>

@@ -25,7 +25,7 @@ namespace AgilePoker
                 { PlayerUniqueName = x.UniqueName, TableName = x.TableName }, x));
         }
 
-        private List<AgilePokerHand> GetPokerHandsFromCache()
+        public List<AgilePokerHand> GetPokerHandsFromCache()
         {
             
             if (HttpRuntime.Cache["AgilePokerTables"] != null)
@@ -54,7 +54,7 @@ namespace AgilePoker
 
         public IEnumerable<AgilePokerHand> GetAllHands(string tableName)
         {
-            return _pokerHands.Values.Where(x => x.TableName == tableName);
+            return GetPokerHandsFromCache().Where(x => x.TableName == tableName);
         }
 
         private IHubConnectionContext Clients

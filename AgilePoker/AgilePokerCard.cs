@@ -28,70 +28,70 @@ namespace AgilePoker
                                     Sequence = 1,
                                     Value = 0,
                                     ToolTip = "Zero",
-                                    PictureUrl = "~/Images/Standard_Zero.jpg"
+                                    PictureUrl =  "../../Images/Standard_Zero.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 2,
                                     Value = .5M,
                                     ToolTip = "Half",
-                                    PictureUrl = "~/Images/Standard_Half.jpg"
+                                    PictureUrl = "../../Images/Standard_Half.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 3,
                                     Value = 1,
                                     ToolTip = "One",
-                                    PictureUrl = "~/Images/Standard_One.jpg"
+                                    PictureUrl = "../../Images/Standard_One.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 4,
                                     Value = 2,
                                     ToolTip = "Two",
-                                    PictureUrl = "~/Images/Standard_Two.jpg"
+                                    PictureUrl = "../../Images/Standard_Two.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 5,
                                     Value = 3,
                                     ToolTip = "Three",
-                                    PictureUrl = "~/Images/Standard_Three.jpg"
+                                    PictureUrl = "../../Images/Standard_Three.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 6,
                                     Value = 5,
                                     ToolTip = "Five",
-                                    PictureUrl = "~/Images/Standard_Five.jpg"
+                                    PictureUrl = "../../Images/Standard_Five.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 7,
                                     Value = 8,
                                     ToolTip = "Eight",
-                                    PictureUrl = "~/Images/Standard_Eight.jpg"
+                                    PictureUrl = "../../Images/Standard_Eight.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 8,
                                     Value = 13,
                                     ToolTip = "Thirteen",
-                                    PictureUrl = "~/Images/Standard_Thirteen.jpg"
+                                    PictureUrl = "../../Images/Standard_Thirteen.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 9,
                                     Value = 20,
                                     ToolTip = "Twenty",
-                                    PictureUrl = "~/Images/Standard_Twenty.jpg"
+                                    PictureUrl = "../../Images/Standard_Twenty.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 10,
                                     Value = 40,
                                     ToolTip = "Forty",
-                                    PictureUrl = "~/Images/Standard_Forty.jpg"
+                                    PictureUrl = "../../Images/Standard_Forty.jpg"
                                 }
                             ,
                             new AgilePokerCard
@@ -99,7 +99,7 @@ namespace AgilePoker
                                     Sequence = 10,
                                     Value = -1,
                                     ToolTip = "Question",
-                                    PictureUrl = "~/Images/Standard_Question.jpg"
+                                    PictureUrl = "../../Images/Standard_Question.jpg"
                                 }
                             ,
                             new AgilePokerCard
@@ -107,7 +107,7 @@ namespace AgilePoker
                                     Sequence = 10,
                                     Value = -2,
                                     ToolTip = "Coffee",
-                                    PictureUrl = "~/Images/Standard_Coffee.jpg"
+                                    PictureUrl = "../../Images/Standard_Coffee.jpg"
                                 }
                         };
                 case Deck.Fibonacci:
@@ -118,105 +118,105 @@ namespace AgilePoker
                                     Sequence = 1,
                                     Value = 0,
                                     ToolTip = "Zero",
-                                    PictureUrl = "~/Images/Fibonacci_Zero.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Zero.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 2,
                                     Value = 1,
                                     ToolTip = "One",
-                                    PictureUrl = "~/Images/Fibonacci_One.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_One.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 3,
                                     Value = 2,
                                     ToolTip = "Two",
-                                    PictureUrl = "~/Images/Fibonacci_Two.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Two.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 4,
                                     Value = 3,
                                     ToolTip = "Three",
-                                    PictureUrl = "~/Images/Fibonacci_Three.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Three.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 5,
                                     Value = 5,
                                     ToolTip = "Five",
-                                    PictureUrl = "~/Images/Fibonacci_Five.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Five.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 6,
                                     Value = 8,
                                     ToolTip = "Eight",
-                                    PictureUrl = "~/Images/Fibonacci_Eight.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Eight.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 7,
                                     Value = 13,
                                     ToolTip = "Thirteen",
-                                    PictureUrl = "~/Images/Fibonacci_Thirteen.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Thirteen.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 8,
                                     Value = 21,
                                     ToolTip = "Twenty One",
-                                    PictureUrl = "~/Images/Fibonacci_TwentyOne.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_TwentyOne.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 9,
                                     Value = 34,
                                     ToolTip = "Thirty Four",
-                                    PictureUrl = "~/Images/Fibonacci_ThirtyFour.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_ThirtyFour.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 10,
                                     Value = 55,
                                     ToolTip = "Fifty Five",
-                                    PictureUrl = "~/Images/Fibonacci_FiftyFive.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_FiftyFive.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 11,
                                     Value = 89,
                                     ToolTip = "Eighty Nine",
-                                    PictureUrl = "~/Images/Fibonacci_EightyNine.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_EightyNine.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 12,
                                     Value = 144,
                                     ToolTip = "One Hundred Forty Four",
-                                    PictureUrl = "~/Images/Fibonacci_OneHundredFortyFour.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_OneHundredFortyFour.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 13,
                                     Value = -1,
                                     ToolTip = "Question",
-                                    PictureUrl = "~/Images/Fibonacci_Question.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Question.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 14,
                                     Value = -2,
                                     ToolTip = "Coffee",
-                                    PictureUrl = "~/Images/Fibonacci_Coffee.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Coffee.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 15,
                                     Value = decimal.MaxValue,
                                     ToolTip = "Infinity",
-                                    PictureUrl = "~/Images/Fibonacci_Infinity.jpg"
+                                    PictureUrl = "../../Images/Fibonacci_Infinity.jpg"
                                 }
                         };
                 case Deck.TeeShirt:
@@ -227,63 +227,63 @@ namespace AgilePoker
                                     Sequence = 1,
                                     Value = 1,
                                     ToolTip = "X-Small",
-                                    PictureUrl = "~/Images/TeeShirt_XS.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_XS.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 2,
                                     Value = 2,
                                     ToolTip = "Small",
-                                    PictureUrl = "~/Images/TeeShirt_S.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_S.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 3,
                                     Value = 3,
                                     ToolTip = "Medium",
-                                    PictureUrl = "~/Images/TeeShirt_M.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_M.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 4,
                                     Value = 4,
                                     ToolTip = "Large",
-                                    PictureUrl = "~/Images/TeeShirt_L.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_L.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 5,
                                     Value = 5,
                                     ToolTip = "X-Large",
-                                    PictureUrl = "~/Images/TeeShirt_XL.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_XL.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 6,
                                     Value = 6,
                                     ToolTip = "XX-Large",
-                                    PictureUrl = "~/Images/TeeShirt_XXL.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_XXL.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 7,
                                     Value = -1,
                                     ToolTip = "Question",
-                                    PictureUrl = "~/Images/TeeShirt_Question.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_Question.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 8,
                                     Value = -2,
                                     ToolTip = "Coffee",
-                                    PictureUrl = "~/Images/TeeShirt_Coffee.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_Coffee.jpg"
                                 },
                             new AgilePokerCard
                                 {
                                     Sequence = 9,
                                     Value = decimal.MaxValue,
                                     ToolTip = "Infinity",
-                                    PictureUrl = "~/Images/TeeShirt_Infinity.jpg"
+                                    PictureUrl = "../../Images/TeeShirt_Infinity.jpg"
                                 }
                         };
                 default:
