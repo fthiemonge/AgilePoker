@@ -22,6 +22,7 @@
                 }
                 <input type="submit" value="Re-Vote" name="action:ReVote"/>
             }
+            <!-- TODO: Ability to have Refresh pushed to the UI via SignalR -->
             <input type="submit" value="Refresh Screen" name="action:Refresh" title="Future SignalR"/>
             <br/>
             <br/>
@@ -32,9 +33,6 @@
                 <br/>
             }
 
-            <!-- TODO: Need to display what users have submitted selections, button (only visible to Agile Master) that allows him/her to
-                flip over all the selections, button (visible to agile master) allowing him/her to clear the voting,
-                ability to have all this pushed to the UI via SignalR, etc -->
             @Html.LabelFor(model => model.SelectedCard)<br/>
             @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
             <br/>
