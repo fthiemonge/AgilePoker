@@ -13,7 +13,7 @@ namespace AgilePoker.Controllers
         {
             var model = new UserRegistration();
             model.UserPreferredName = GetUserPreferredNameFromCookie();
-            model.ExistingRoomNames = GetExistingRoomNames();
+            model.ExistingRoomNames = GetCachedRoomNames();
             return View(model);
         }
 
@@ -30,7 +30,7 @@ namespace AgilePoker.Controllers
         [MultipleButton(Name = "action", Argument = "CreateRoom")]
         public ActionResult CreateRoom(UserRegistration model)
         {
-            var existingRooms = GetExistingRoomNames().Select(x => x.ToLower());
+            var existingRooms = GetCachedRoomNames().Select(x => x.ToLower());
             if (string.IsNullOrWhiteSpace(model.NewRoomName))
             {
                 ModelState.AddModelError("NewRoomName", "Room Name required");
@@ -48,19 +48,19 @@ namespace AgilePoker.Controllers
             }
 
             model.UserPreferredName = GetUserPreferredNameFromCookie();
-            model.ExistingRoomNames = GetExistingRoomNames();
+            model.ExistingRoomNames = GetCachedRoomNames();
             Session["CurrentRoomName"] = model.NewRoomName;
             return View("Index", model);
         }
 
         public ActionResult EnterRoom(string roomName)
         {
+            Session["CurrentRoomName"] = roomName;
             var model = new Room
                 {
-                    PokerRoom = GetExistingRooms().First(x => x.Name == roomName)
+                    PokerRoom = GetCachedRoom()
                 };
-            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
-            Session["CurrentRoomName"] = roomName;
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);      
             return View("Room", model);
         }
 
@@ -69,19 +69,84 @@ namespace AgilePoker.Controllers
         public ActionResult SelectCard(Room model)
         {
             // TODO: Handle if session expired, etc.
-            var roomName = (string) Session["CurrentRoomName"];
-            model.PokerRoom = GetExistingRooms().First(x => x.Name == roomName);
+            model.PokerRoom = GetCachedRoom();
             model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
             model.SelectedCard = model.PlayingCards.First(x => x.Value == model.SelectedCardValue);
+            var user = model.PokerRoom.Users.First(x => x.UniqueName == User.Identity.Name);
+            user.SelectedCard = model.SelectedCard;
+            UpdateVote(model.PokerRoom.Name, user);
             return View("Room", model);
         }
 
-        private List<string> GetExistingRoomNames()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Refresh")]
+        public ActionResult Refresh(Room model)
         {
-            return GetExistingRooms().Select(x => x.Name).ToList();
+            // TODO: Handle if session expired, etc.
+            model.PokerRoom = GetCachedRoom();
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            model.SelectedCard = model.PlayingCards.First(x => x.Value == model.SelectedCardValue);
+            
+            return View("Room", model);
         }
 
-        private List<AgilePokerRoom> GetExistingRooms()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "ShowVotes")]
+        public ActionResult ShowVotes(Room model)
+        {
+            // TODO: Handle if session expired, etc.
+            DisplayVotes(true);
+            model.PokerRoom = GetCachedRoom();
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            var user = model.PokerRoom.Users.First(x => x.UniqueName == User.Identity.Name);
+            model.SelectedCard = user.SelectedCard;
+            
+            return View("Room", model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "ReVote")]
+        public ActionResult ReVote(Room model)
+        {
+            // TODO: Handle if session expired, etc.
+            var roomName = (string)Session["CurrentRoomName"];
+           
+            var agilePokerRooms = GetCachedRooms();
+            foreach (var user in agilePokerRooms.First(x => x.Name == roomName).Users)
+            {
+                var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
+                var userIndex = agilePokerRooms[roomIndex].Users.FindIndex(x => x.UniqueName == user.UniqueName);
+                var newUser = agilePokerRooms[roomIndex].Users[userIndex];
+                newUser.SelectedCard = null;
+            }
+            
+            var serializedRooms = Newtonsoft.Json.JsonConvert.SerializeObject(agilePokerRooms);
+            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            DisplayVotes(false);
+
+            model.PokerRoom = GetCachedRoom();
+            model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            
+
+            return View("Room", model);
+        }
+
+        private void DisplayVotes(bool displayVotes)
+        {
+            var roomName = (string)Session["CurrentRoomName"];
+            var agilePokerRooms = GetCachedRooms();
+            var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
+            agilePokerRooms[roomIndex].DisplayVotes = displayVotes;
+            var serializedRooms = Newtonsoft.Json.JsonConvert.SerializeObject(agilePokerRooms);
+            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
+        private List<string> GetCachedRoomNames()
+        {
+            return GetCachedRooms().Select(x => x.Name).ToList();
+        }
+
+        private List<AgilePokerRoom> GetCachedRooms()
         {
             var roomNames = new List<AgilePokerRoom>();
             if (HttpRuntime.Cache["AgilePokerRooms"] != null)
@@ -122,6 +187,13 @@ namespace AgilePoker.Controllers
             HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
+        private AgilePokerRoom GetCachedRoom()
+        {
+            var roomName = (string)Session["CurrentRoomName"];
+            var rooms = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+            return rooms.First(x => x.Name == roomName);
+        }
+
         private void AddUserToRoom(string roomName, string preferredName)
         {
             var agilePokerRooms = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
@@ -129,6 +201,22 @@ namespace AgilePoker.Controllers
             {
                 agilePokerRooms.First(x => x.Name == roomName).Users.Add(new AgilePokerUser { PreferredName = preferredName, UniqueName = User.Identity.Name});
             }
+            var serializedRooms = Newtonsoft.Json.JsonConvert.SerializeObject(agilePokerRooms);
+            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
+        private void UpdateVote(string roomName, AgilePokerUser user)
+        {
+            var agilePokerRooms = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+            if (agilePokerRooms.First(x => x.Name == roomName).Users.FirstOrDefault(x => x.UniqueName == User.Identity.Name) != null)
+            {
+                var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
+                var userIndex = agilePokerRooms[roomIndex].Users.FindIndex(x => x.UniqueName == user.UniqueName);
+
+                agilePokerRooms[roomIndex].Users[userIndex] = user;
+            }
+            var serializedRooms = Newtonsoft.Json.JsonConvert.SerializeObject(agilePokerRooms);
+            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
         private string GetUserPreferredNameFromCookie()

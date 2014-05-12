@@ -8,5 +8,6 @@ namespace AgilePoker
         public Deck Deck { get; set; }
         public List<AgilePokerUser> Users { get; set; }
         public AgilePokerUser AgileMasterUser { get; set; }
+        public bool DisplayVotes { get; set; }
     }
 }
