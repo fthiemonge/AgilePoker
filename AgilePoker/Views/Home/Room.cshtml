@@ -10,16 +10,19 @@
     <div class="col-md-5 col-sm-5">
         @using (Html.BeginForm())
         {
-            if (@Model.PokerRoom.DisplayVotes)
+            if (@Model.PokerRoom.AgileMasterUser.UniqueName == User.Identity.Name)
             {
-                <input type="submit" value="Show Votes" name="action:ShowVotes" disabled="disabled" />
+                if (@Model.PokerRoom.DisplayVotes)
+                {
+                    <input type="submit" value="Show Votes" name="action:ShowVotes" disabled="disabled" />
+                }
+                else
+                {
+                    <input type="submit" value="Show Votes" name="action:ShowVotes"  />
+                }
+                <input type="submit" value="Re-Vote" name="action:ReVote"/>
             }
-            else
-            {
-                <input type="submit" value="Show Votes" name="action:ShowVotes"  />
-            }
-            <input type="submit" value="Re-Vote" name="action:ReVote"/>
-            <input type="submit" value="Refresh Screen" name="action:Refresh"/>
+            <input type="submit" value="Refresh Screen" name="action:Refresh" title="Future SignalR"/>
             <br/>
             <br/>
 
