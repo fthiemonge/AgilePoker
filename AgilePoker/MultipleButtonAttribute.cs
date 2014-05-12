@@ -7,8 +7,14 @@ namespace AgilePoker
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class MultipleButtonAttribute : ActionNameSelectorAttribute
     {
-        public string Name { get; set; }
+        #region Properties
+
         public string Argument { get; set; }
+        public string Name { get; set; }
+
+        #endregion
+
+        #region Instance Methods
 
         public override bool IsValidName(ControllerContext controllerContext, string actionName, MethodInfo methodInfo)
         {
@@ -24,5 +30,7 @@ namespace AgilePoker
 
             return isValidName;
         }
+
+        #endregion
     }
 }

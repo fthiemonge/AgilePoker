@@ -5,10 +5,16 @@ namespace AgilePoker.Models
 {
     public class Room
     {
-        public AgilePokerRoom PokerRoom { get; set; }
+        #region Properties
+
         public List<AgilePokerCard> PlayingCards { get; set; }
-        public decimal SelectedCardValue { get; set; }
-        [Display(Name="Select a Card")]
+        public AgilePokerRoom PokerRoom { get; set; }
+
+        [Display(Name = "Select a Card")]
         public AgilePokerCard SelectedCard { get; set; }
+
+        public decimal SelectedCardValue { get; set; }
+
+        #endregion
     }
 }

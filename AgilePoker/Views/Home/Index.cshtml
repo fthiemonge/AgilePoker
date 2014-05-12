@@ -25,7 +25,8 @@
     {
         <h3>Join an Existing Room</h3>
         @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
-        <br/><br />
+        <br/>
+        <br />
         <input type="submit" value="Join Room" name="action:JoinRoom"/>
     }
 
@@ -35,6 +36,7 @@
     <br/>
     @Html.LabelFor(model => model.NewRoomDeck)<br/>
     @Html.DropDownListFor(model => model.NewRoomDeck, @Model.Decks)
-    <br /><br />
+    <br />
+    <br />
     <input type="submit" value="Create Room" name="action:CreateRoom"/>
 }

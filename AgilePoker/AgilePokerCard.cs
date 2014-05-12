@@ -5,10 +5,16 @@ namespace AgilePoker
 {
     public class AgilePokerCard
     {
-        public int Sequence { get; set; }
-        public decimal Value { get; set; }
-        public string ToolTip { get; set; }
+        #region Properties
+
         public string PictureUrl { get; set; }
+        public int Sequence { get; set; }
+        public string ToolTip { get; set; }
+        public decimal Value { get; set; }
+
+        #endregion
+
+        #region Public Static Methods
 
         public static List<AgilePokerCard> GetCards(Deck deck)
         {
@@ -87,7 +93,7 @@ namespace AgilePoker
                                     ToolTip = "Forty",
                                     PictureUrl = "~/Images/Standard_Forty.jpg"
                                 }
-                                ,
+                            ,
                             new AgilePokerCard
                                 {
                                     Sequence = 10,
@@ -95,7 +101,7 @@ namespace AgilePoker
                                     ToolTip = "Question",
                                     PictureUrl = "~/Images/Standard_Question.jpg"
                                 }
-                                ,
+                            ,
                             new AgilePokerCard
                                 {
                                     Sequence = 10,
@@ -232,7 +238,7 @@ namespace AgilePoker
                                 },
                             new AgilePokerCard
                                 {
-                                    Sequence =3,
+                                    Sequence = 3,
                                     Value = 3,
                                     ToolTip = "Medium",
                                     PictureUrl = "~/Images/TeeShirt_M.jpg"
@@ -283,9 +289,8 @@ namespace AgilePoker
                 default:
                     throw new ApplicationException("No cards associated with deck [" + deck.ToString() + "]");
             }
-
         }
-    }
 
-    
+        #endregion
+    }
 }
