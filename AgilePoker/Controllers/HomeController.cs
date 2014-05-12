@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AgilePoker.Hubs;
 using AgilePoker.Models;
 using Newtonsoft.Json;
 
@@ -11,6 +12,8 @@ namespace AgilePoker.Controllers
     public class HomeController : Controller
     {
         #region Instance Methods
+
+        AgilePokerHub hub = new AgilePokerHub();
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "CreateRoom")]
@@ -47,6 +50,14 @@ namespace AgilePoker.Controllers
                     PokerRoom = GetCachedRoom()
                 };
             model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
+            var hands = model.PokerRoom.Players.Select(x => new AgilePokerHand()
+                {
+                    Hand = x.SelectedCard,
+                    TableName = roomName,
+                    UniqueName = x.UniqueName,
+                    UserPreferredName = x.PreferredName
+                });
+            model.Hands = JsonConvert.SerializeObject(hands);
             return View("Room", model);
         }
 
@@ -74,17 +85,17 @@ namespace AgilePoker.Controllers
             // TODO: Handle if session expired, etc.
             var roomName = (string) Session["CurrentRoomName"];
 
-            var agilePokerRooms = GetCachedRooms();
-            foreach (var user in agilePokerRooms.First(x => x.Name == roomName).Users)
+            var AgilePokerTables = GetCachedRooms();
+            foreach (var user in AgilePokerTables.First(x => x.TableName == roomName).Players)
             {
-                var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
-                var userIndex = agilePokerRooms[roomIndex].Users.FindIndex(x => x.UniqueName == user.UniqueName);
-                var newUser = agilePokerRooms[roomIndex].Users[userIndex];
+                var roomIndex = AgilePokerTables.FindIndex(x => x.TableName == roomName);
+                var userIndex = AgilePokerTables[roomIndex].Players.FindIndex(x => x.UniqueName == user.UniqueName);
+                var newUser = AgilePokerTables[roomIndex].Players[userIndex];
                 newUser.SelectedCard = null;
             }
 
-            var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
-            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            var serializedRooms = JsonConvert.SerializeObject(AgilePokerTables);
+            HttpRuntime.Cache.Insert("AgilePokerTables", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
             DisplayVotes(false);
 
             model.PokerRoom = GetCachedRoom();
@@ -114,9 +125,9 @@ namespace AgilePoker.Controllers
             model.PokerRoom = GetCachedRoom();
             model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
             model.SelectedCard = model.PlayingCards.First(x => x.Value == model.SelectedCardValue);
-            var user = model.PokerRoom.Users.First(x => x.UniqueName == User.Identity.Name);
+            var user = model.PokerRoom.Players.First(x => x.UniqueName == User.Identity.Name);
             user.SelectedCard = model.SelectedCard;
-            UpdateVote(model.PokerRoom.Name, user);
+            UpdateVote(model.PokerRoom.TableName, user);
             return View("Room", model);
         }
 
@@ -128,7 +139,7 @@ namespace AgilePoker.Controllers
             DisplayVotes(true);
             model.PokerRoom = GetCachedRoom();
             model.PlayingCards = AgilePokerCard.GetCards(model.PokerRoom.Deck);
-            var user = model.PokerRoom.Users.First(x => x.UniqueName == User.Identity.Name);
+            var user = model.PokerRoom.Players.First(x => x.UniqueName == User.Identity.Name);
             model.SelectedCard = user.SelectedCard;
 
             return View("Room", model);
@@ -140,84 +151,84 @@ namespace AgilePoker.Controllers
 
         private void AddUserToRoom(string roomName, string preferredName)
         {
-            var agilePokerRooms =
-                JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+            var AgilePokerTables =
+                JsonConvert.DeserializeObject<List<AgilePokerTable>>(HttpRuntime.Cache["AgilePokerTables"].ToString());
             if (
-                agilePokerRooms.First(x => x.Name == roomName)
-                               .Users.FirstOrDefault(x => x.UniqueName == User.Identity.Name) == null)
+                AgilePokerTables.First(x => x.TableName == roomName)
+                               .Players.FirstOrDefault(x => x.UniqueName == User.Identity.Name) == null)
             {
-                agilePokerRooms.First(x => x.Name == roomName).Users.Add(new AgilePokerUser
+                AgilePokerTables.First(x => x.TableName == roomName).Players.Add(new AgilePokerPlayer
                     {
                         PreferredName = preferredName,
                         UniqueName = User.Identity.Name
                     });
             }
-            var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
-            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            var serializedRooms = JsonConvert.SerializeObject(AgilePokerTables);
+            HttpRuntime.Cache.Insert("AgilePokerTables", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
         private void CreateRoom(string roomName, Deck deck, string userPreferredName)
         {
-            var agilePokerRooms = new List<AgilePokerRoom>();
-            if (HttpRuntime.Cache["AgilePokerRooms"] != null)
+            var AgilePokerTables = new List<AgilePokerTable>();
+            if (HttpRuntime.Cache["AgilePokerTables"] != null)
             {
-                agilePokerRooms =
-                    JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+                AgilePokerTables =
+                    JsonConvert.DeserializeObject<List<AgilePokerTable>>(HttpRuntime.Cache["AgilePokerTables"].ToString());
             }
-            agilePokerRooms.Add(
-                new AgilePokerRoom
+            AgilePokerTables.Add(
+                new AgilePokerTable
                     {
                         Deck = deck,
-                        Name = roomName,
-                        Users = new List<AgilePokerUser>
+                        TableName = roomName,
+                        Players = new List<AgilePokerPlayer>
                             {
-                                new AgilePokerUser
+                                new AgilePokerPlayer
                                     {
                                         PreferredName = userPreferredName,
                                         UniqueName = User.Identity.Name
                                     }
                             },
-                        AgileMasterUser = new AgilePokerUser
+                        AgileMasterPlayer = new AgilePokerPlayer
                             {
                                 PreferredName = userPreferredName,
                                 UniqueName = User.Identity.Name
                             }
                     });
 
-            var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
-            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            var serializedRooms = JsonConvert.SerializeObject(AgilePokerTables);
+            HttpRuntime.Cache.Insert("AgilePokerTables", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
         private void DisplayVotes(bool displayVotes)
         {
             var roomName = (string) Session["CurrentRoomName"];
-            var agilePokerRooms = GetCachedRooms();
-            var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
-            agilePokerRooms[roomIndex].DisplayVotes = displayVotes;
-            var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
-            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            var AgilePokerTables = GetCachedRooms();
+            var roomIndex = AgilePokerTables.FindIndex(x => x.TableName == roomName);
+            AgilePokerTables[roomIndex].ShowHands = displayVotes;
+            var serializedRooms = JsonConvert.SerializeObject(AgilePokerTables);
+            HttpRuntime.Cache.Insert("AgilePokerTables", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
-        private AgilePokerRoom GetCachedRoom()
+        private AgilePokerTable GetCachedRoom()
         {
             var roomName = (string) Session["CurrentRoomName"];
             var rooms =
-                JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
-            return rooms.First(x => x.Name == roomName);
+                JsonConvert.DeserializeObject<List<AgilePokerTable>>(HttpRuntime.Cache["AgilePokerTables"].ToString());
+            return rooms.First(x => x.TableName == roomName);
         }
 
         private List<string> GetCachedRoomNames()
         {
-            return GetCachedRooms().Select(x => x.Name).ToList();
+            return GetCachedRooms().Select(x => x.TableName).ToList();
         }
 
-        private List<AgilePokerRoom> GetCachedRooms()
+        private List<AgilePokerTable> GetCachedRooms()
         {
-            var roomNames = new List<AgilePokerRoom>();
-            if (HttpRuntime.Cache["AgilePokerRooms"] != null)
+            var roomNames = new List<AgilePokerTable>();
+            if (HttpRuntime.Cache["AgilePokerTables"] != null)
             {
                 return
-                    JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+                    JsonConvert.DeserializeObject<List<AgilePokerTable>>(HttpRuntime.Cache["AgilePokerTables"].ToString());
             }
             return roomNames;
         }
@@ -243,21 +254,24 @@ namespace AgilePoker.Controllers
             HttpContext.Response.Cookies.Add(cookie);
         }
 
-        private void UpdateVote(string roomName, AgilePokerUser user)
+        private void UpdateVote(string tableName, AgilePokerPlayer user)
         {
-            var agilePokerRooms =
-                JsonConvert.DeserializeObject<List<AgilePokerRoom>>(HttpRuntime.Cache["AgilePokerRooms"].ToString());
+            var agilePokerTables =
+                JsonConvert.DeserializeObject<List<AgilePokerTable>>(HttpRuntime.Cache["AgilePokerTables"].ToString());
             if (
-                agilePokerRooms.First(x => x.Name == roomName)
-                               .Users.FirstOrDefault(x => x.UniqueName == User.Identity.Name) != null)
+                agilePokerTables.First(x => x.TableName == tableName)
+                               .Players.FirstOrDefault(x => x.UniqueName == User.Identity.Name) != null)
             {
-                var roomIndex = agilePokerRooms.FindIndex(x => x.Name == roomName);
-                var userIndex = agilePokerRooms[roomIndex].Users.FindIndex(x => x.UniqueName == user.UniqueName);
+                var roomIndex = agilePokerTables.FindIndex(x => x.TableName == tableName);
+                var userIndex = agilePokerTables[roomIndex].Players.FindIndex(x => x.UniqueName == user.UniqueName);
 
-                agilePokerRooms[roomIndex].Users[userIndex] = user;
+                agilePokerTables[roomIndex].Players[userIndex] = user;
+
             }
-            var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
-            HttpRuntime.Cache.Insert("AgilePokerRooms", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            var serializedRooms = JsonConvert.SerializeObject(agilePokerTables);
+            HttpRuntime.Cache.Insert("AgilePokerTables", serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+
+            
         }
 
         #endregion
