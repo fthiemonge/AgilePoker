@@ -15,6 +15,8 @@ namespace AgilePoker
         private readonly static Lazy<AgilePokerRoomState> _instance = new Lazy<AgilePokerRoomState>(() => new AgilePokerRoomState(GlobalHost.ConnectionManager.GetHubContext<AgilePokerHub>().Clients));
         private readonly ConcurrentDictionary<string, AgilePokerRoom> _pokerRooms = new ConcurrentDictionary<string, AgilePokerRoom>();
 
+        // TODO: Need to lock (lockObject) {} around a lot of the logic in this method
+
         private AgilePokerRoomState(IHubConnectionContext clients)
         {
             Clients = clients;
@@ -74,6 +76,36 @@ namespace AgilePoker
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
+        public void ShowVotes(string roomName)
+        {
+            var room = GetRoom(roomName);
+            room.ShowVotes = true;
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            rooms[roomIndex] = room;
+
+            var serializedRooms = JsonConvert.SerializeObject(rooms);
+            HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
+        public void ClearVotes(string roomName)
+        {
+            var room = GetRoom(roomName);
+            room.ShowVotes = false;
+            foreach( var vote in room.Votes)
+            {
+                vote.Card = null;
+            }
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            rooms[roomIndex] = room;
+
+            var serializedRooms = JsonConvert.SerializeObject(rooms);
+            HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+            
+        }
 
         //private void BroadcastPokerHands(string tableName)
         //{

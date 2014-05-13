@@ -8,11 +8,10 @@
 
 <div class="row">
     <div class="col-md-5 col-sm-5">
-        @using (Html.BeginForm())
-        {
-            <div id="agileMaster">
-                <input type="submit" value="Show Hands" name="action:ShowVotes"  />
-                <input type="submit" value="New Deal" name="action:ReVote"/>
+
+            <div id="divScrumMaster">
+                <input type="submit" value="Show Votes" id="btnShowVotes" />
+                <input type="submit" value="Clear Votes" id="btnClearVotes" />
             </div>
             <br/>
 
@@ -25,7 +24,7 @@
             <br/>
             <br/>
             <input type="button" value="Vote!" id="btnVote"/>
-        }
+
     </div>
     <br/>
     <div class="col-md-7 col-sm-7">
@@ -61,6 +60,14 @@
             $('#btnVote').click(function () {
                 vote();
             });
+            
+            $('#btnShowVotes').click(function () {
+                showVotes();
+            });
+            
+            $('#btnClearVotes').click(function () {
+                clearVotes();
+            });
         });
 
         function init() {
@@ -90,11 +97,21 @@
         
         function vote() {
             alert("Voting...");
-            var uniqueUsername = '@User.Identity.Name';
-            agilePokerHub.server.vote(roomName, uniqueUsername, $('#ddlSelectedCard').val()).done(function () {
+            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function () {
                 // TODO: Display card
+                
                 alert("Voted!");
             });
+        }
+        
+        function showVotes() {
+            alert("ShowVotes...");
+            agilePokerHub.server.showVotes(roomName);
+        }
+        
+        function clearVotes() {
+            alert("ClearVotes...");
+            agilePokerHub.server.clearVotes(roomName);
         }
 
         function getVoteHtml(card, showVotes) {

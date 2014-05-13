@@ -45,6 +45,20 @@ namespace AgilePoker.Hubs
             Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
         }
 
+        public void ShowVotes(string roomName)
+        {
+            _roomState.ShowVotes(roomName);
+
+            Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
+        }
+
+        public void ClearVotes(string roomName)
+        {
+            _roomState.ClearVotes(roomName);
+
+            Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
+        }
+
         #endregion
     }
 }
