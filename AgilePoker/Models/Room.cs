@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace AgilePoker.Models
 {
@@ -7,13 +6,9 @@ namespace AgilePoker.Models
     {
         #region Properties
 
+        public string RoomName { get; set; }
         public List<AgilePokerCard> PlayingCards { get; set; }
-        public AgilePokerRoom PokerRoom { get; set; }
-
-        [Display(Name = "Select a Card")]
-        public AgilePokerCard SelectedCard { get; set; }
-
-        public decimal SelectedCardValue { get; set; }
+        public string SerializedAgilePokerRoom { get; set; }
 
         #endregion
     }

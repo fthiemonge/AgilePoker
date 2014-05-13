@@ -1,70 +1,123 @@
 ﻿@model AgilePoker.Models.Room
 @{
-    ViewBag.Title = @Model.PokerRoom.Name;
+    ViewBag.Title = @Model.RoomName;
 }
 <hgroup class="title">
-    <h1>@Model.PokerRoom.Name</h1>
+    <h1>@Model.RoomName</h1>
 </hgroup>
 
 <div class="row">
     <div class="col-md-5 col-sm-5">
-        @using (Html.BeginForm())
-        {
-            if (@Model.PokerRoom.AgileMasterUser.UniqueName == User.Identity.Name)
-            {
-                if (@Model.PokerRoom.DisplayVotes)
-                {
-                    <input type="submit" value="Show Votes" name="action:ShowVotes" disabled="disabled" />
-                }
-                else
-                {
-                    <input type="submit" value="Show Votes" name="action:ShowVotes"  />
-                }
-                <input type="submit" value="Re-Vote" name="action:ReVote"/>
-            }
-            <!-- TODO: Ability to have Refresh pushed to the UI via SignalR -->
-            <input type="submit" value="Refresh Screen" name="action:Refresh" title="Future SignalR"/>
-            <br/>
+
+            <div id="divScrumMaster">
+                <input type="submit" value="Show Votes" id="btnShowVotes" />
+                <input type="submit" value="Clear Votes" id="btnClearVotes" />
+            </div>
             <br/>
 
-            if (Model.SelectedCard != null)
-            {
-                <img src="@Url.Content(@Model.SelectedCard.PictureUrl)" title="@Model.SelectedCard.ToolTip" alt="@Model.SelectedCard.ToolTip"/>
-                <br/>
-            }
+            <div id="divSelectedCard"></div>
 
-            @Html.LabelFor(model => model.SelectedCard)<br/>
-            @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
+            <label for="ddlSelectedCard">Select a Card</label><br/>
+            @Html.DropDownList("ddlSelectedCard", new SelectList(Model.PlayingCards, "Value", "CardName"))
             <br/>
             <br/>
-            <input type="submit" value="Vote!" name="action:SelectCard"/>
-        }
+            <input type="button" value="Vote!" id="btnVote"/>
+
     </div>
     <br/>
     <div class="col-md-7 col-sm-7">
-            
-        <label>Players</label><br/>
-        @foreach (var user in Model.PokerRoom.Users)
-        {
-            if (user.SelectedCard != null)
-            {
-                @user.PreferredName
-                if (@Model.PokerRoom.DisplayVotes)
-                {
-                    <text> - </text>
-                    <img src="@Url.Content(@user.SelectedCard.PictureUrl)" title="@user.SelectedCard.ToolTip" alt="@user.SelectedCard.ToolTip" width="30"/>
-                }
-                else
-                {
-                    <text> - Voted</text>
-                }
-                <br />
-            }
-            else
-            {
-                @user.PreferredName
-                <text> - No Vote Yet</text>
-            }
-        }
+        <div id="signalRUpdateTable">
+            <table border="1">
+                <thead>
+                    <tr><th>Player</th><th>Hand</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="2">loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<script src="../../Scripts/jquery.signalR-2.0.3.min.js"></script>
+<script src="signalr/hubs"></script>
+<script type="text/javascript">
+    $(function() {
+
+        var agilePokerHub = $.connection.AgilePokerHub;
+        var roomName = '@Model.RoomName';
+        var $updateTable = $('#signalRUpdateTable');
+        var $updateTableBody = $updateTable.find('tbody');
+        var voteTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
+
+        var serializedRoom = '';
+        
+        $.connection.hub.start(function() {
+            // TODO: Get groups working correctly
+            $('#btnVote').click(function () {
+                vote();
+            });
+            
+            $('#btnShowVotes').click(function () {
+                showVotes();
+            });
+            
+            $('#btnClearVotes').click(function () {
+                clearVotes();
+            });
+        });
+
+        function init() {
+            agilePokerHub.server.getRoom(roomName).done(function (room) {
+                updateRoom(room);
+            });
+        }
+
+        agilePokerHub.client.broadcastRoom = function (room) {
+            updateRoom(room);
+        };
+
+        $.connection.hub.start().done(init);
+
+        function updateRoom(room) {
+            serializedRoom = room;
+            $updateTableBody.empty();
+            if (room != undefined && room.Votes != undefined) {
+                $.each(room.Votes, function () {
+                    $updateTableBody.append(voteTemplate.replace('{Player}', this.User.PreferredName).replace('{Hand}', getVoteHtml(this.Card, room.ShowVotes)));
+                });
+            }
+        }
+        
+        function vote() {
+            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function (card) {
+                // TODO: Fix this
+                alert("vote done. Card = " + card.CardName);
+                alert("vote done. Card = " + card.PictureUrl);
+                
+                $('#divSelectedCard').empty();
+                //$('#divSelectedCard').html("Voted!!!!!");
+                $('#divSelectedCard').append("<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + " />");
+            });
+        }
+        
+        function showVotes() {
+            agilePokerHub.server.showVotes(roomName);
+        }
+        
+        function clearVotes() {
+            agilePokerHub.server.clearVotes(roomName);
+        }
+
+        function getVoteHtml(card, shouldShowVotes) {
+            if (card == undefined) {
+                return "No Vote";
+            }
+            if (!shouldShowVotes) {
+                return "Voted";
+            }
+            return "<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + "' width='30'/>";
+        }
+    });
+    
+</script>
