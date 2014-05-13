@@ -15,9 +15,7 @@
             </div>
             <br/>
 
-            <div id="divSelectedCard">
-                <!-- TODO: Show selected card -->
-            </div>
+            <div id="divSelectedCard"></div>
 
             <label for="ddlSelectedCard">Select a Card</label><br/>
             @Html.DropDownList("ddlSelectedCard", new SelectList(Model.PlayingCards, "Value", "CardName"))
@@ -52,11 +50,10 @@
         var $updateTableBody = $updateTable.find('tbody');
         var voteTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
 
-        var serializedRoom = '@Model.SerializedAgilePokerRoom';
+        var serializedRoom = '';
         
         $.connection.hub.start(function() {
             // TODO: Get groups working correctly
-            alert("starting");
             $('#btnVote').click(function () {
                 vote();
             });
@@ -71,21 +68,18 @@
         });
 
         function init() {
-            alert("Init!");
             agilePokerHub.server.getRoom(roomName).done(function (room) {
                 updateRoom(room);
             });
         }
 
         agilePokerHub.client.broadcastRoom = function (room) {
-            alert("broadcastPokerHands " + room.RoomName);
             updateRoom(room);
         };
 
         $.connection.hub.start().done(init);
 
         function updateRoom(room) {
-            alert("updateRoom " + room);
             serializedRoom = room;
             $updateTableBody.empty();
             if (room != undefined && room.Votes != undefined) {
@@ -96,31 +90,30 @@
         }
         
         function vote() {
-            alert("Voting...");
-            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function () {
-                // TODO: Display card
+            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function (card) {
+                // TODO: Fix this
+                alert("vote done. Card = " + card.CardName);
+                alert("vote done. Card = " + card.PictureUrl);
                 
-                alert("Voted!");
+                $('#divSelectedCard').empty();
+                //$('#divSelectedCard').html("Voted!!!!!");
+                $('#divSelectedCard').append("<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + " />");
             });
         }
         
         function showVotes() {
-            alert("ShowVotes...");
             agilePokerHub.server.showVotes(roomName);
         }
         
         function clearVotes() {
-            alert("ClearVotes...");
             agilePokerHub.server.clearVotes(roomName);
         }
 
-        function getVoteHtml(card, showVotes) {
-            alert("getVoteHtml card: " + card);
-            alert("getVoteHtml showVotes: " + showVotes);
+        function getVoteHtml(card, shouldShowVotes) {
             if (card == undefined) {
                 return "No Vote";
             }
-            if (!showVotes) {
+            if (!shouldShowVotes) {
                 return "Voted";
             }
             return "<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + "' width='30'/>";

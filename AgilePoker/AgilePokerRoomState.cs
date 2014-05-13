@@ -56,7 +56,7 @@ namespace AgilePoker
             set;
         }
 
-        public void Vote(string roomName, string uniqueUsername, decimal cardValue)
+        public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardValue)
         {
             var room = GetRoom(roomName);
 
@@ -74,6 +74,8 @@ namespace AgilePoker
 
             var serializedRooms = JsonConvert.SerializeObject(rooms);
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+
+            return card;
         }
 
         public void ShowVotes(string roomName)

@@ -38,11 +38,13 @@ namespace AgilePoker.Hubs
             return _roomState.GetRoom(roomName);
         }
 
-        public void Vote(string roomName, string uniqueUsername, decimal cardValue)
+        public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardValue)
         {
-            _roomState.Vote(roomName, uniqueUsername, cardValue);
+            var card = _roomState.Vote(roomName, uniqueUsername, cardValue);
 
             Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
+
+            return card;
         }
 
         public void ShowVotes(string roomName)
