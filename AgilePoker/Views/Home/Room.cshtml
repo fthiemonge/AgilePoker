@@ -91,13 +91,8 @@
         
         function vote() {
             agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function (card) {
-                // TODO: Fix this
-                alert("vote done. Card = " + card.CardName);
-                alert("vote done. Card = " + card.PictureUrl);
-                
                 $('#divSelectedCard').empty();
-                //$('#divSelectedCard').html("Voted!!!!!");
-                $('#divSelectedCard').append("<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + " />");
+                $('#divSelectedCard').append($('<img>', { src: card.PictureUrl, title: card.CardName, alt: card.CardName }));
             });
         }
         
@@ -106,7 +101,9 @@
         }
         
         function clearVotes() {
-            agilePokerHub.server.clearVotes(roomName);
+            agilePokerHub.server.clearVotes(roomName).done(function() {
+                $('#divSelectedCard').empty();
+            });
         }
 
         function getVoteHtml(card, shouldShowVotes) {
