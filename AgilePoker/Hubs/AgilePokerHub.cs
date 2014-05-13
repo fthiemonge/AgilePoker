@@ -9,19 +9,19 @@ namespace AgilePoker.Hubs
     {
         #region Static Member Variables
 
-        private readonly AgilePokerHands _hands;
+        private readonly AgilePokerRoomState _roomState;
 
         #endregion
 
         #region Constructors
 
-        public AgilePokerHub() : this(AgilePokerHands.Instance)
+        public AgilePokerHub() : this(AgilePokerRoomState.Instance)
         {
         }
 
-        public AgilePokerHub(AgilePokerHands hands)
+        public AgilePokerHub(AgilePokerRoomState roomState)
         {
-            _hands = hands;
+            _roomState = roomState;
         }
 
         #endregion
@@ -33,14 +33,16 @@ namespace AgilePoker.Hubs
             Groups.Add(Context.ConnectionId, tableName);
         }
 
-        public IEnumerable<AgilePokerHand> GetAllHands(string tableName)
+        public AgilePokerRoom GetRoom(string roomName)
         {
-            return _hands.GetAllHands(tableName);
+            return _roomState.GetRoom(roomName);
         }
 
-        public void PlayHand(string tableName, string playerUniqueName, string handValue)
+        public void Vote(string roomName, string uniqueUsername, decimal cardValue)
         {
-            Clients.All.broadcastPokerHands(_hands.GetAllHands(tableName));
+            _roomState.Vote(roomName, uniqueUsername, cardValue);
+
+            Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
         }
 
         #endregion

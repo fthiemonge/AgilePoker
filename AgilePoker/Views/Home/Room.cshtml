@@ -1,83 +1,43 @@
 ﻿@model AgilePoker.Models.Room
 @{
-    ViewBag.Title = @Model.PokerRoom.TableName;
+    ViewBag.Title = @Model.RoomName;
 }
 <hgroup class="title">
-    <h1>@Model.PokerRoom.TableName</h1>
+    <h1>@Model.RoomName</h1>
 </hgroup>
 
 <div class="row">
     <div class="col-md-5 col-sm-5">
         @using (Html.BeginForm())
         {
-            if (@Model.PokerRoom.AgileMasterPlayer.UniqueName == User.Identity.Name)
-            {
-                if (@Model.PokerRoom.ShowHands)
-                {
-                    <input type="submit" value="Show Hands" name="action:ShowVotes" disabled="disabled" />
-                }
-                else
-                {
-                    <input type="submit" value="Show Hands" name="action:ShowVotes"  />
-                }
+            <div id="agileMaster">
+                <input type="submit" value="Show Hands" name="action:ShowVotes"  />
                 <input type="submit" value="New Deal" name="action:ReVote"/>
-            }
-            <!-- TODO: Ability to have Refresh pushed to the UI via SignalR -->
-            <input type="submit" value="Refresh Screen" name="action:Refresh" title="Future SignalR"/>
-            <br/>
+            </div>
             <br/>
 
-            if (Model.SelectedCard != null)
-            {
-                <img src="@Url.Content(@Model.SelectedCard.PictureUrl)" title="@Model.SelectedCard.ToolTip" alt="@Model.SelectedCard.ToolTip"/>
-                <br/>
-            }
+            <div id="divSelectedCard">
+                <!-- TODO: Show selected card -->
+            </div>
 
-            @Html.LabelFor(model => model.SelectedCard)<br/>
-            @Html.DropDownListFor(model => model.SelectedCardValue, new SelectList(Model.PlayingCards, "Value", "ToolTip", Model.SelectedCardValue))
+            <label for="ddlSelectedCard">Select a Card</label><br/>
+            @Html.DropDownList("ddlSelectedCard", new SelectList(Model.PlayingCards, "Value", "CardName"))
             <br/>
             <br/>
-            <input type="submit" value="Vote!" name="action:SelectCard" id="action:SelectCard"/>
+            <input type="button" value="Vote!" id="btnVote"/>
         }
     </div>
     <br/>
     <div class="col-md-7 col-sm-7">
-            
-        <label>Players</label><br/>
-        <div id="divUsers">
-            @foreach (var user in Model.PokerRoom.Players)
-            {
-                if (user.SelectedCard != null)
-                {
-                    @user.PreferredName
-                    if (@Model.PokerRoom.ShowHands)
-                    {
-                        <text> - </text>
-                        <img src="@Url.Content(@user.SelectedCard.PictureUrl)" title="@user.SelectedCard.ToolTip" alt="@user.SelectedCard.ToolTip" width="30"/>
-                    }
-                    else
-                    {
-                        <text> - Voted</text>
-                    }
-                    <br />
-                }
-                else
-                {
-                    @user.PreferredName
-                    <text> - No Vote Yet</text>
-                }
-            }
-        </div>
-        
         <div id="signalRUpdateTable">
             <table border="1">
-            <thead>
-                <tr><th>Player</th><th>Hand</th></tr>
-            </thead>
-            <tbody>
-                <tr><td colspan="2">loading...</td></tr>
-            </tbody>
-        </table>
+                <thead>
+                    <tr><th>Player</th><th>Hand</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="2">loading...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -88,62 +48,66 @@
     $(function() {
 
         var agilePokerHub = $.connection.AgilePokerHub;
-        var tableName = '@Model.PokerRoom.TableName';
+        var roomName = '@Model.RoomName';
         var $updateTable = $('#signalRUpdateTable');
         var $updateTableBody = $updateTable.find('tbody');
-        var rowTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
+        var voteTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
 
-        var playerHands = '@Model.Hands';
-
+        var serializedRoom = '@Model.SerializedAgilePokerRoom';
+        
         $.connection.hub.start(function() {
             // TODO: Get groups working correctly
-            agilePokerHub.server.join(tableName);
+            alert("starting");
+            $('#btnVote').click(function () {
+                vote();
+            });
         });
 
         function init() {
-            alert("Init() Called!");
-            agilePokerHub.server.getAllHands(tableName).done(function(hands) {
-                updateHands(hands);
+            alert("Init!");
+            agilePokerHub.server.getRoom(roomName).done(function (room) {
+                updateRoom(room);
             });
         }
 
-        agilePokerHub.client.broadcastPokerHands = function(hands) {
-            alert("broadcastPokerHands " + hands.length);
-            updateHands(hands);
+        agilePokerHub.client.broadcastRoom = function (room) {
+            alert("broadcastPokerHands " + room.RoomName);
+            updateRoom(room);
         };
 
-        $.connection.hub.start().done(function() {
-            $('#action:SelectCard').click(playHand());
+        $.connection.hub.start().done(init);
 
-            // TODO: Do we need to call init() here?
-            init();
-        });
-
-        function playHand() {
-            agilePokerHub.server.playHand(tableName, '@User.Identity.Name', $('#SelectedCardValue').val());
-        }
-
-        function updateHands(hands) {
-            alert("updateHands 1");
-            // TODO: Update hands panel based on data hands collection
-            playerHands = hands;
+        function updateRoom(room) {
+            alert("updateRoom " + room);
+            serializedRoom = room;
             $updateTableBody.empty();
-            $.each(playerHands, function() {
-                alert("updateHands 3");
-                if (item != undefined) {
-                    alert("hand 1!");
-                    $updateTableBody.append(rowTemplate.replace('{Player}', this.UserPreferredName).replace('{Hand}', getHandHtml(this.Hand)));
-                    alert("hand 2!");
-                }
+            if (room != undefined && room.Votes != undefined) {
+                $.each(room.Votes, function () {
+                    $updateTableBody.append(voteTemplate.replace('{Player}', this.User.PreferredName).replace('{Hand}', getVoteHtml(this.Card, room.ShowVotes)));
+                });
+            }
+        }
+        
+        function vote() {
+            alert("Voting...");
+            var uniqueUsername = '@User.Identity.Name';
+            agilePokerHub.server.vote(roomName, uniqueUsername, $('#ddlSelectedCard').val()).done(function () {
+                // TODO: Display card
+                alert("Voted!");
             });
         }
 
-        function getHandHtml(hand) {
-            if (hand == undefined) {
+        function getVoteHtml(card, showVotes) {
+            alert("getVoteHtml card: " + card);
+            alert("getVoteHtml showVotes: " + showVotes);
+            if (card == undefined) {
                 return "No Vote";
             }
-            
-            return "<img src='" + hand.PictureUrl + "' title='" + hand.ToolTip + "' alt='" + hand.ToolTip + "' width='30'/>";
+            if (!showVotes) {
+                return "Voted";
+            }
+            return "<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + "' width='30'/>";
         }
     });
+    
 </script>

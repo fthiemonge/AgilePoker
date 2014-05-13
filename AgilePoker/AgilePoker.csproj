@@ -163,13 +163,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgilePokerCard.cs" />
-    <Compile Include="AgilePokerHand.cs" />
-    <Compile Include="AgilePokerTablePlayer.cs" />
-    <Compile Include="AgilePokerPlayer.cs" />
+    <Compile Include="AgilePokerRoom.cs" />
+    <Compile Include="AgilePokerUser.cs" />
+    <Compile Include="AgilePokerVote.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Deck.cs" />
     <Compile Include="Global.asax.cs">
@@ -180,9 +181,8 @@
     <Compile Include="Models\UserRegistration.cs" />
     <Compile Include="MultipleButtonAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AgilePokerTable.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="AgilePokerHands.cs" />
+    <Compile Include="AgilePokerRoomState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
