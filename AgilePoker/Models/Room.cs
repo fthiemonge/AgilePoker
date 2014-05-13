@@ -6,9 +6,8 @@ namespace AgilePoker.Models
     {
         #region Properties
 
-        public string RoomName { get; set; }
         public List<AgilePokerCard> PlayingCards { get; set; }
-        public string SerializedAgilePokerRoom { get; set; }
+        public string RoomName { get; set; }
 
         #endregion
     }
