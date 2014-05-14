@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace AgilePoker.Controllers
 {
+    [Authorize] 
     public class HomeController : Controller
     {
         #region Instance Methods

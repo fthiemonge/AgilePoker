@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
@@ -28,18 +29,15 @@ namespace AgilePoker.Hubs
 
         #region Instance Methods
 
-        public void Join(string tableName)
-        {
-            Groups.Add(Context.ConnectionId, tableName);
-        }
-
         public AgilePokerRoom GetRoom(string roomName)
         {
+            roomName = HttpUtility.HtmlDecode(roomName);
             return _roomState.GetRoom(roomName);
         }
 
         public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardValue)
         {
+            roomName = HttpUtility.HtmlDecode(roomName);
             var card = _roomState.Vote(roomName, uniqueUsername, cardValue);
 
             Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
@@ -49,6 +47,7 @@ namespace AgilePoker.Hubs
 
         public void ShowVotes(string roomName)
         {
+            roomName = HttpUtility.HtmlDecode(roomName);
             _roomState.ShowVotes(roomName);
 
             Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
@@ -56,6 +55,7 @@ namespace AgilePoker.Hubs
 
         public void ClearVotes(string roomName)
         {
+            roomName = HttpUtility.HtmlDecode(roomName);
             _roomState.ClearVotes(roomName);
 
             Clients.All.broadcastRoom(_roomState.GetRoom(roomName));
