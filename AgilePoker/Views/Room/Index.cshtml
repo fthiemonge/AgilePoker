@@ -86,6 +86,7 @@
                 $.each(room.Votes, function () {
                     $updateTableBody.append(voteTemplate.replace('{Player}', this.User.PreferredName).replace('{Hand}', getVoteHtml(this.Card, room.ShowVotes)));
                 });
+                $('#btnVote').prop('disabled', room.ShowVotes);
             }
         }
         

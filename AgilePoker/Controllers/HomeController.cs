@@ -42,7 +42,6 @@ namespace AgilePoker.Controllers
             return View("Index", model);
         }
 
-
         public ActionResult Index()
         {
             var model = new UserRegistration();
