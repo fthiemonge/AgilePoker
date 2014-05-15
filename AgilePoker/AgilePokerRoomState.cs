@@ -108,10 +108,5 @@ namespace AgilePoker
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
             
         }
-
-        //private void BroadcastPokerHands(string tableName)
-        //{
-        //    Clients.All.broadcastPokerHands(GetAllRooms(tableName));
-        //}
     }
 }

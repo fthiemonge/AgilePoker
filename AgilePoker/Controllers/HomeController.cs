@@ -33,7 +33,7 @@ namespace AgilePoker.Controllers
                 CreateRoom(model.NewRoomName, model.NewRoomDeck, model.UserPreferredName);
                 return RedirectToAction("Index", "Room", new
                     {
-                        roomName = model.NewRoomName
+                        id = model.NewRoomName
                     });
             }
 
@@ -58,7 +58,7 @@ namespace AgilePoker.Controllers
             AddUserToRoom(model.SelectedExistingRoomName, model.UserPreferredName);
             return RedirectToAction("Index", "Room", new
                 {
-                    roomName = model.SelectedExistingRoomName
+                    id = model.SelectedExistingRoomName
                 });
         }
 

@@ -12,10 +12,9 @@ namespace AgilePoker.Controllers
     {
         #region Instance Methods
 
-        public ActionResult Index(string roomName)
+        public ActionResult Index(string id)
         {
-            Session[Constants.Session.CurrentRoomName] = roomName;
-            var agilePokerRoom = GetCachedRoom();
+            var agilePokerRoom = GetCachedRoom(id);
 
             if (agilePokerRoom == null ||
                 agilePokerRoom.Votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) == null)
@@ -26,7 +25,7 @@ namespace AgilePoker.Controllers
             var model = new Room
                 {
                     PlayingCards = AgilePokerCard.GetCards(agilePokerRoom.Deck),
-                    RoomName = roomName
+                    RoomName = id
                 };
 
             return View(model);
@@ -36,9 +35,8 @@ namespace AgilePoker.Controllers
 
         #region Private Instance Methods
 
-        private AgilePokerRoom GetCachedRoom()
+        private AgilePokerRoom GetCachedRoom(string roomName)
         {
-            var roomName = (string) Session[Constants.Session.CurrentRoomName];
             var rooms =
                 JsonConvert.DeserializeObject<List<AgilePokerRoom>>(
                     HttpRuntime.Cache[Constants.Cache.AgilePokerRooms].ToString());
