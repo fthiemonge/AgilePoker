@@ -53,7 +53,6 @@
         var serializedRoom = '';
         
         $.connection.hub.start(function() {
-            // TODO: Get groups working correctly
             $('#btnVote').click(function () {
                 vote();
             });
@@ -68,9 +67,7 @@
         });
 
         function init() {
-            agilePokerHub.server.getRoom(roomName).done(function (room) {
-                updateRoom(room);
-            });
+            agilePokerHub.server.joinRoom(roomName);
         }
 
         agilePokerHub.client.broadcastUpdateRoom = function (room, shouldClearVotes) {

@@ -29,10 +29,10 @@ namespace AgilePoker.Hubs
 
         #region Instance Methods
 
-        public AgilePokerRoom GetRoom(string roomName)
+        public void JoinRoom(string roomName)
         {
             roomName = HttpUtility.HtmlDecode(roomName);
-            return _roomState.GetRoom(roomName);
+            Clients.All.broadcastUpdateRoom(_roomState.GetRoom(roomName), false);
         }
 
         public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardValue)
