@@ -73,8 +73,11 @@
             });
         }
 
-        agilePokerHub.client.broadcastRoom = function (room) {
+        agilePokerHub.client.broadcastUpdateRoom = function (room, shouldClearVotes) {
             updateRoom(room);
+            if (shouldClearVotes) {
+                $('#divSelectedCard').empty();
+            }
         };
 
         $.connection.hub.start().done(init);
@@ -102,9 +105,7 @@
         }
         
         function clearVotes() {
-            agilePokerHub.server.clearVotes(roomName).done(function() {
-                $('#divSelectedCard').empty();
-            });
+            agilePokerHub.server.clearVotes(roomName);
         }
 
         function getVoteHtml(card, shouldShowVotes) {
