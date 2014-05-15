@@ -47,7 +47,13 @@ namespace AgilePoker
 
         public AgilePokerRoom GetRoom(string roomName)
         {
-            return GetPokerRoomsFromCache().First(x => x.RoomName == roomName);
+            var room = GetPokerRoomsFromCache().First(x => x.RoomName == roomName);
+
+            if (room.ShowVotes)
+            {
+                room.Votes = room.Votes.OrderBy(x => x.Card == null ? decimal.MaxValue : x.Card.Value).ToList();
+            }
+            return room;
         }
 
         private IHubConnectionContext Clients
@@ -67,6 +73,10 @@ namespace AgilePoker
             var voteIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
 
             room.Votes[voteIndex].Card = card;
+
+            var vote = room.Votes[voteIndex];
+            room.Votes.RemoveAt(voteIndex);
+            room.Votes.Insert(0, vote);
 
             var rooms = GetPokerRoomsFromCache();
             var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
