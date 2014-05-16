@@ -47,9 +47,9 @@ namespace AgilePoker
 
         public AgilePokerRoom GetRoom(string roomName)
         {
-            var room = GetPokerRoomsFromCache().First(x => x.RoomName == roomName);
+            var room = GetPokerRoomsFromCache().FirstOrDefault(x => x.RoomName == roomName);
 
-            if (room.ShowVotes)
+            if (room != null && room.ShowVotes)
             {
                 room.Votes = room.Votes.OrderBy(x => x.Card == null ? decimal.MaxValue : x.Card.Value).ToList();
             }
@@ -86,6 +86,44 @@ namespace AgilePoker
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
 
             return card;
+        }
+
+        public void LeaveRoom(string roomName, string uniqueUsername)
+        {
+            var room = GetRoom(roomName);
+            var voteIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
+            var isScrumMaser = (room.ScrumMaster.UniqueName == room.Votes[voteIndex].User.UniqueName);
+
+            if (isScrumMaser)
+            {
+                room.Votes = new List<AgilePokerVote>();
+            }
+            else
+            {
+                room.Votes.RemoveAt(voteIndex);
+            }
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            if (!room.Votes.Any())
+            {
+                rooms.RemoveAt(roomIndex);
+            }
+            else
+            {
+                rooms[roomIndex] = room;
+            }
+
+            if (rooms.Any())
+            {
+                var serializedRooms = JsonConvert.SerializeObject(rooms);
+                HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue,
+                    new TimeSpan(2, 0, 0));
+            }
+            else
+            {
+                HttpRuntime.Cache.Remove(Constants.Cache.AgilePokerRooms);
+            }
         }
 
         public void ShowVotes(string roomName)

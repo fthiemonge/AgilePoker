@@ -5,23 +5,25 @@
 <hgroup class="title">
     <h1>@Model.RoomName</h1>
 </hgroup>
+<a id="lnkLeaveRoom">Leave Room</a><br/><br/>
 
 <div class="row">
     <div class="col-md-5 col-sm-5">
 
-            <div id="divScrumMaster">
-                <input type="submit" value="Show Votes" id="btnShowVotes" />
-                <input type="submit" value="Clear Votes" id="btnClearVotes" />
-            </div>
-            <br/>
+        <div id="divScrumMaster">
+            <input type="submit" value="Show Votes" id="btnShowVotes" />
+            <input type="submit" value="Clear Votes" id="btnClearVotes" />
+        </div>
+        <br/>
 
-            <div id="divSelectedCard"></div>
-
+        <div id="divSelectedCard"></div>
+        <div id="divSelectCard">
             <label for="ddlSelectedCard">Select a Card</label><br/>
             @Html.DropDownList("ddlSelectedCard", new SelectList(Model.PlayingCards, "Value", "CardName"))
             <br/>
             <br/>
             <input type="button" value="Vote!" id="btnVote"/>
+        </div>
 
     </div>
     <br/>
@@ -39,8 +41,8 @@
     </div>
 </div>
 
-<script src="../../Scripts/jquery.signalR-2.0.3.min.js"></script>
-<script src='/signalr/js'></script>
+<script src="../../Scripts/jquery.signalR-2.0.3.min.js"> </script>
+<script src='/signalr/js'> </script>
 <script type="text/javascript">
     $(function() {
 
@@ -51,18 +53,24 @@
         var voteTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
 
         var serializedRoom = '';
-        
+
         $.connection.hub.start(function() {
-            $('#btnVote').click(function () {
+            $('#btnVote').click(function() {
                 vote();
             });
-            
-            $('#btnShowVotes').click(function () {
+
+            $('#btnShowVotes').click(function() {
                 showVotes();
             });
-            
-            $('#btnClearVotes').click(function () {
+
+            $('#btnClearVotes').click(function() {
                 clearVotes();
+            });
+
+            $('#lnkLeaveRoom').click(function() {
+                if (confirm('Are you sure?')) {
+                    leaveRoom();
+                }
             });
         });
 
@@ -70,7 +78,10 @@
             agilePokerHub.server.joinRoom(roomName);
         }
 
-        agilePokerHub.client.broadcastUpdateRoom = function (room, shouldClearVotes) {
+        agilePokerHub.client.broadcastKillRoom = function() {
+            window.location.href = '../../Home';
+        };
+        agilePokerHub.client.broadcastUpdateRoom = function(room, shouldClearVotes) {
             updateRoom(room);
             if (shouldClearVotes) {
                 $('#divSelectedCard').empty();
@@ -83,24 +94,28 @@
             serializedRoom = room;
             $updateTableBody.empty();
             if (room != undefined && room.Votes != undefined) {
-                $.each(room.Votes, function () {
+                $.each(room.Votes, function() {
                     $updateTableBody.append(voteTemplate.replace('{Player}', this.User.PreferredName).replace('{Hand}', getVoteHtml(this.Card, room.ShowVotes)));
                 });
-                $('#btnVote').prop('disabled', room.ShowVotes);
+                if (room.ShowVotes) {
+                    $('#divSelectCard').hide();
+                } else {
+                    $('#divSelectCard').show();
+                }
             }
         }
-        
+
         function vote() {
-            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function (card) {
+            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function(card) {
                 $('#divSelectedCard').empty();
                 $('#divSelectedCard').append($('<img>', { src: card.PictureUrl, title: card.CardName, alt: card.CardName }));
             });
         }
-        
+
         function showVotes() {
             agilePokerHub.server.showVotes(roomName);
         }
-        
+
         function clearVotes() {
             agilePokerHub.server.clearVotes(roomName);
         }
@@ -114,6 +129,10 @@
             }
             return "<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + "' width='30'/>";
         }
+
+        function leaveRoom() {
+            agilePokerHub.server.leaveRoom(roomName, '@User.Identity.Name');
+        }
     });
-    
+
 </script>

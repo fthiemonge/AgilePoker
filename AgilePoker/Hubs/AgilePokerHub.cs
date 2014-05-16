@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -59,6 +60,23 @@ namespace AgilePoker.Hubs
             _roomState.ClearVotes(roomName);
 
             Clients.All.broadcastUpdateRoom(_roomState.GetRoom(roomName), true);
+        }
+
+        public void LeaveRoom(string roomName, string uniqueUsername)
+        {
+            roomName = HttpUtility.HtmlDecode(roomName);
+            _roomState.LeaveRoom(roomName, uniqueUsername);
+
+            var room = _roomState.GetRoom(roomName);
+            // Room will not exist if the scrum master leaves
+            if (room != null)
+            {
+                Clients.All.broadcastUpdateRoom(room, false);
+            }
+            else
+            {
+                Clients.All.broadcastKillRoom();
+            }
         }
 
         #endregion
