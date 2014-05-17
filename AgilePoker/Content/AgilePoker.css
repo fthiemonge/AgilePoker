@@ -1,0 +1,85 @@
+﻿.card {
+    float:left;
+    border-width:0.25em;
+    border-style:solid;
+    border-color:rgb(0,64,128);
+    border-radius:1em;
+    margin:0.5em;
+    text-align:center;
+    color:rgb(0,64,128);
+    width:5em;
+    height:7em;
+    font-weight:bold;
+    background-color:rgb(198,198,198);
+    font-size:14pt;
+    position:relative;
+    top:0;
+    left:0;
+}
+.smallCard {
+    border-width:0.25em;
+    border-style:solid;
+    border-color:rgb(0,64,128);
+    border-radius:0.25em;
+    text-align:center;
+    color:rgb(0,64,128);
+    width:2em;
+    height:2.5em;
+    font-weight:bold;
+    background-color:rgb(198,198,198);
+}
+.cardTop {
+    text-align:left;
+    padding:0em 0.5em;
+    font-size:1em;
+    height:25%;
+}
+.cardBottom {
+    text-align:left;
+    padding:0em 0.5em;
+    font-size:1em;
+    height:25%;
+    transform: rotate(-180deg);
+}
+.cardCenter {
+    margin:auto;
+    text-align:center;
+    font-size:2em;
+    font-weight:bold;
+    height:50%;
+}
+.cardCenter>span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.smallCard>span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.cardCenter>img {
+  width:auto;
+  height:100%;
+  line-height:normal;
+}
+.smallCard>img {
+  height:auto;
+  width:100%;    
+  margin-top:auto;
+  margin-bottom:auto;
+}
+#divHand {
+    clear:both;
+}
+.selectedCard {
+    border-color:rgb(128,128,0);
+    color:rgb(128,128,0);
+}
+.cardTarget {
+    width:100%;
+    height:100%;
+    background-color:none;
+    position:absolute;
+    top:0px;
+    left:0px;
+    z-index:99;
+}

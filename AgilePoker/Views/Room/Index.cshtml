@@ -8,26 +8,37 @@
 <a id="lnkLeaveRoom">Leave Room</a><br/><br/>
 
 <div class="row">
-    <div class="col-md-5 col-sm-5">
+    <div class="col-md-7 col-sm-7">
 
         <div id="divScrumMaster">
             <input type="submit" value="Show Votes" id="btnShowVotes" />
             <input type="submit" value="Clear Votes" id="btnClearVotes" />
         </div>
-        <br/>
-
-        <div id="divSelectedCard"></div>
-        <div id="divSelectCard">
-            <label for="ddlSelectedCard">Select a Card</label><br/>
-            @Html.DropDownList("ddlSelectedCard", new SelectList(Model.PlayingCards, "Value", "CardName"))
-            <br/>
-            <br/>
-            <input type="button" value="Vote!" id="btnVote"/>
+        <div id="divHand">
+            @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
+            {
+                <div class="card" id="Card_@card.Value" data-card-value="@card.Value">
+                    <div class="cardClickTarget" data-card-value="@card.Value"></div>
+                    <div class="cardTop"><span>@card.Representation</span></div>
+                    <div class="cardCenter">
+                        @if (card.Type == AgilePoker.CardType.Image)
+                        {
+                            <img src="@card.PictureUrl" title="@card.CardName" alt="@card.CardName" />
+                        }
+                        else
+                        {
+                            <span>@card.Representation</span>
+                        }
+                    </div>
+                    <div class="cardBottom"><span>@card.Representation</span></div>
+                    <div class="cardTarget" data-card-id="Card_@card.Value" data-card-value="@card.Value"></div>
+                    </div>
+            }
         </div>
 
     </div>
     <br/>
-    <div class="col-md-7 col-sm-7">
+    <div class="col-md-5 col-sm-5">
         <div id="signalRUpdateTable">
             <table border="1">
                 <thead>
@@ -72,6 +83,9 @@
                     leaveRoom();
                 }
             });
+            $('.cardTarget').click(function (event) {
+                vote(event);
+            });
         });
 
         function init() {
@@ -85,7 +99,7 @@
         agilePokerHub.client.broadcastUpdateRoom = function(room, shouldClearVotes) {
             updateRoom(room);
             if (shouldClearVotes) {
-                $('#divSelectedCard').empty();
+                $(".selectedCard").removeClass("selectedCard");
             }
         };
 
@@ -95,8 +109,11 @@
             serializedRoom = room;
             $updateTableBody.empty();
             if (room != undefined && room.Votes != undefined) {
-                $.each(room.Votes, function() {
-                    $updateTableBody.append(voteTemplate.replace('{Player}', this.User.PreferredName).replace('{Hand}', getVoteHtml(this.Card, room.ShowVotes)));
+                $.each(room.Votes, function () {
+                    $tr = $("<tr>");
+                    $tr.append($("<td>", { text: this.User.PreferredName }));
+                    $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
+                    $updateTableBody.append($tr);
                 });
                 if (room.ShowVotes) {
                     $('#divSelectCard').hide();
@@ -106,10 +123,11 @@
             }
         }
 
-        function vote() {
-            agilePokerHub.server.vote(roomName, '@User.Identity.Name', $('#ddlSelectedCard').val()).done(function(card) {
-                $('#divSelectedCard').empty();
-                $('#divSelectedCard').append($('<img>', { src: card.PictureUrl, title: card.CardName, alt: card.CardName }));
+        function vote(event) {
+            var value = $(event.target).attr("data-card-value");
+            agilePokerHub.server.vote(roomName, '@User.Identity.Name', value).done(function (card) {
+                $(".selectedCard").removeClass("selectedCard");
+                $(event.target).parent().addClass("selectedCard");
             });
         }
 
@@ -122,13 +140,23 @@
         }
 
         function getVoteHtml(card, shouldShowVotes) {
+            $smallCard = $("<div>").addClass("smallCard");
             if (card == undefined) {
-                return "No Vote";
+                return $smallCard;
             }
             if (!shouldShowVotes) {
-                return "Voted";
+                $smallCard.append($("<span>").text("\u2713"))
             }
-            return "<img src='" + card.PictureUrl + "' title='" + card.CardName + "' alt='" + card.CardName + "' width='30'/>";
+            else {
+                if (card.Type == "@Convert.ToInt32(AgilePoker.CardType.Image)") {
+                    $smallCard.append($("<img>", { src: card.PictureUrl, title: card.CardName, alt: card.CardName }))
+                }
+                else {
+                    $smallCard.append($("<span>").text(card.Representation.toString()))
+                }
+            }
+            return $smallCard;
+
         }
 
         function leaveRoom() {
