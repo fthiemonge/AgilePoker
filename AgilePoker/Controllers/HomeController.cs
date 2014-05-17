@@ -18,13 +18,17 @@ namespace AgilePoker.Controllers
         public ActionResult CreateRoom(UserRegistration model)
         {
             var existingRooms = GetCachedRoomNames().Select(x => x.ToLower());
-            if (string.IsNullOrWhiteSpace(model.NewRoomName))
+            if (model.NewRoomName == null || model.NewRoomName.Trim() == "")
             {
                 ModelState.AddModelError("NewRoomName", "Room Name required");
             }
             else if (existingRooms.Contains(model.NewRoomName.ToLower().Trim()))
             {
                 ModelState.AddModelError("NewRoomName", "Room by this name already in use");
+            }
+            else
+            {
+                model.NewRoomName = model.NewRoomName.Trim();    
             }
 
             if (ModelState.IsValid)
