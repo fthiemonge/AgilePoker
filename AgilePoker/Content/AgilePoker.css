@@ -4,7 +4,7 @@
     border-style:solid;
     border-color:rgb(0,64,128);
     border-radius:1em;
-    margin:0.5em;
+    margin:0.25em;
     text-align:center;
     color:rgb(0,64,128);
     width:5em;
@@ -40,6 +40,8 @@
     font-size:1em;
     height:25%;
     transform: rotate(-180deg);
+    -webkit-transform: rotate(-180deg);
+    -ms-transform: rotate(-180deg);
 }
 .cardCenter {
     margin:auto;

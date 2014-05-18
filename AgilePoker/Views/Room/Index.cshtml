@@ -111,7 +111,7 @@
             if (room != undefined && room.Votes != undefined) {
                 $.each(room.Votes, function () {
                     $tr = $("<tr>");
-                    $tr.append($("<td>", { text: this.User.PreferredName }));
+                    $tr.append($("<td>").text(this.User.PreferredName));
                     $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
                     $updateTableBody.append($tr);
                 });
@@ -145,14 +145,14 @@
                 return $smallCard;
             }
             if (!shouldShowVotes) {
-                $smallCard.append($("<span>").text("\u2713"))
+                $smallCard.append($("<span>").text("\u2713"));
             }
             else {
                 if (card.Type == "@Convert.ToInt32(AgilePoker.CardType.Image)") {
-                    $smallCard.append($("<img>", { src: card.PictureUrl, title: card.CardName, alt: card.CardName }))
+                    $smallCard.append($("<img>", { src: card.PictureUrl, title: card.CardName, alt: card.CardName }));
                 }
                 else {
-                    $smallCard.append($("<span>").text(card.Representation.toString()))
+                    $smallCard.append($("<span>").text(card.Representation.toString()));
                 }
             }
             return $smallCard;
