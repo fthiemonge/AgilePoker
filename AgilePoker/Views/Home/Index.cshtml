@@ -24,10 +24,20 @@
     if (Model.ExistingRoomNames.Any())
     {
         <h3>Join an Existing Room</h3>
-        @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
-        <br/>
-        <br />
-        <input type="submit" value="Join Room" name="action:JoinRoom"/>
+        if (Model.ExistingRoomNames.Count > 3)
+        {
+            @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
+            <br/>
+            <br />
+            <input type="submit" value="Join Room" name="action:JoinRoom"/>
+        }
+        else
+        {
+            foreach (var roomName in Model.ExistingRoomNames.OrderBy(x => x))
+            {
+                 <a onclick="JoinRoom('@roomName')" href="#">@roomName</a><br/>
+            }
+        }
     }
 
     <h3>Create Your Own Room</h3>
@@ -39,4 +49,14 @@
     <br />
     <br />
     <input type="submit" value="Create Room" name="action:CreateRoom"/>
+    
+    @Html.HiddenFor(model => model.SelectedExistingRoomName)
+    <input type="submit" value="Join Room" name="action:JoinRoom" id="btnJoinRoom" style="visibility: hidden"/>
 }
+
+<script type="text/javascript">
+    function JoinRoom(roomName) {
+        $('#SelectedExistingRoomName').val(roomName);
+        $('#btnJoinRoom').click();
+    }
+</script>
