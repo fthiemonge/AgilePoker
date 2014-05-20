@@ -17,8 +17,8 @@
         <div id="divHand">
             @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
             {
-                <div class="card" id="Card_@card.Value" data-card-value="@card.Value">
-                    <div class="cardClickTarget" data-card-value="@card.Value"></div>
+                <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
+                    <div class="cardClickTarget" data-card-value="@card.Sequence"></div>
                     <div class="cardTop"><span>@card.Representation</span></div>
                     <div class="cardCenter">
                         @if (card.Type == AgilePoker.CardType.Image)
@@ -31,7 +31,7 @@
                         }
                     </div>
                     <div class="cardBottom"><span>@card.Representation</span></div>
-                    <div class="cardTarget" data-card-id="Card_@card.Value" data-card-value="@card.Value"></div>
+                    <div class="cardTarget" data-card-id="Card_@card.Sequence" data-card-value="@card.Sequence"></div>
                     </div>
             }
         </div>
@@ -61,8 +61,7 @@
         var roomName = '@Model.RoomName';
         var $updateTable = $('#signalRUpdateTable');
         var $updateTableBody = $updateTable.find('tbody');
-        var voteTemplate = '<tr><td>{Player}</td><td>{Hand}</td></tr>';
-
+        
         var serializedRoom = '';
 
         $.connection.hub.start(function() {
@@ -116,9 +115,9 @@
                     $updateTableBody.append($tr);
                 });
                 if (room.ShowVotes) {
-                    $('#divSelectCard').hide();
+                    $('#divHand').hide();
                 } else {
-                    $('#divSelectCard').show();
+                    $('#divHand').show();
                 }
             }
         }

@@ -51,7 +51,7 @@ namespace AgilePoker
 
             if (room != null && room.ShowVotes)
             {
-                room.Votes = room.Votes.OrderBy(x => x.Card == null ? decimal.MaxValue : x.Card.Value).ToList();
+                room.Votes = room.Votes.OrderBy(x => x.Card == null ? decimal.MaxValue : x.Card.Sequence).ToList();
             }
             return room;
         }
@@ -62,13 +62,13 @@ namespace AgilePoker
             set;
         }
 
-        public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardValue)
+        public AgilePokerCard Vote(string roomName, string uniqueUsername, decimal cardSequence)
         {
             var room = GetRoom(roomName);
 
             var cards = AgilePokerCard.GetCards(room.Deck);
 
-            var card = cards.First(x => x.Value == cardValue);
+            var card = cards.First(x => x.Sequence == cardSequence);
 
             var voteIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
 
