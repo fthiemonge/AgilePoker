@@ -17,7 +17,8 @@ namespace AgilePoker.Controllers
             var agilePokerRoom = GetCachedRoom(id);
 
             if (agilePokerRoom == null ||
-                agilePokerRoom.Votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) == null)
+                (agilePokerRoom.Votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) == null &&
+                agilePokerRoom.Observers.FirstOrDefault(x => x.UniqueName == User.Identity.Name) == null))
             {
                 return RedirectToAction("Index", "Home");
             }

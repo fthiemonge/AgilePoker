@@ -26,7 +26,8 @@
         <h3>Join an Existing Room</h3>
         if (Model.ExistingRoomNames.Count > 3)
         {
-            @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
+            @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))<br/>
+            @Html.LabelFor(model => model.JoinAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.JoinAsObserver)
             <br/>
             <br />
             <input type="submit" value="Join Room" name="action:JoinRoom"/>
@@ -37,6 +38,7 @@
             {
                  <a onclick="JoinRoom('@roomName')" href="#">@roomName</a><br/>
             }
+            @Html.LabelFor(model => model.JoinAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.JoinAsObserver)
         }
     }
 
@@ -46,6 +48,8 @@
     <br/>
     @Html.LabelFor(model => model.NewRoomDeck)<br/>
     @Html.DropDownListFor(model => model.NewRoomDeck, @Model.Decks)
+    <br/>
+    @Html.LabelFor(model => model.CreateAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.CreateAsObserver)
     <br />
     <br />
     <input type="submit" value="Create Room" name="action:CreateRoom"/>

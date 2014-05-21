@@ -34,7 +34,7 @@ namespace AgilePoker.Controllers
             if (ModelState.IsValid)
             {
                 SetUserPreferredNameInCookie(model.UserPreferredName);
-                CreateRoom(model.NewRoomName, model.NewRoomDeck, model.UserPreferredName);
+                CreateRoom(model.NewRoomName, model.NewRoomDeck, model.UserPreferredName, model.CreateAsObserver);
                 return RedirectToAction("Index", "Room", new
                     {
                         id = model.NewRoomName
@@ -59,7 +59,7 @@ namespace AgilePoker.Controllers
         public ActionResult JoinRoom(UserRegistration model)
         {
             SetUserPreferredNameInCookie(model.UserPreferredName);
-            AddUserToRoom(model.SelectedExistingRoomName, model.UserPreferredName);
+            AddUserToRoom(model.SelectedExistingRoomName, model.UserPreferredName, model.JoinAsObserver);
             return RedirectToAction("Index", "Room", new
                 {
                     id = model.SelectedExistingRoomName
@@ -70,14 +70,15 @@ namespace AgilePoker.Controllers
 
         #region Private Instance Methods
 
-        private void AddUserToRoom(string roomName, string preferredUsername)
+        private void AddUserToRoom(string roomName, string preferredUsername, bool isObserver)
         {
             var agilePokerRooms =
                 JsonConvert.DeserializeObject<List<AgilePokerRoom>>(
                     HttpRuntime.Cache[Constants.Cache.AgilePokerRooms].ToString());
-            if (
-                agilePokerRooms.First(x => x.RoomName == roomName)
-                               .Votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) == null)
+            var votes = agilePokerRooms.First(x => x.RoomName == roomName).Votes;
+
+            // You can be a voter or an overserver, but not both
+            if (!isObserver && votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) == null)
             {
                 agilePokerRooms.First(x => x.RoomName == roomName).Votes.Add(
                     new AgilePokerVote
@@ -91,12 +92,34 @@ namespace AgilePoker.Controllers
                         }
                     );
             }
+            else if (isObserver && votes.FirstOrDefault(x => x.User.UniqueName == User.Identity.Name) != null)
+            {
+                var voterIndex = votes.FindIndex(x => x.User.UniqueName == User.Identity.Name);
+                agilePokerRooms.First(x => x.RoomName == roomName).Votes.RemoveAt(voterIndex);
+            }
+
+            var observers = agilePokerRooms.First(x => x.RoomName == roomName).Observers;
+
+            if (isObserver && observers.FirstOrDefault(x => x.UniqueName == User.Identity.Name) == null)
+            {
+                observers.Add(new AgilePokerUser
+                {
+                    PreferredName = preferredUsername,
+                    UniqueName = User.Identity.Name
+                });
+            }
+            else if (!isObserver && observers.FirstOrDefault(x => x.UniqueName == User.Identity.Name) != null)
+            {
+                var observerIndex = observers.FindIndex(x => x.UniqueName == User.Identity.Name);
+                observers.RemoveAt(observerIndex);
+            }
+
             var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue,
                 new TimeSpan(2, 0, 0));
         }
 
-        private void CreateRoom(string roomName, Deck deck, string preferredUsername)
+        private void CreateRoom(string roomName, Deck deck, string preferredUsername, bool isObserver)
         {
             var agilePokerRooms = new List<AgilePokerRoom>();
             if (HttpRuntime.Cache[Constants.Cache.AgilePokerRooms] != null)
@@ -110,25 +133,39 @@ namespace AgilePoker.Controllers
                     {
                         Deck = deck,
                         RoomName = roomName,
-                        Votes = new List<AgilePokerVote>
-                            {
-                                new AgilePokerVote
-                                    {
-                                        User = new AgilePokerUser
-                                            {
-                                                PreferredName = preferredUsername,
-                                                UniqueName = User.Identity.Name
-                                            },
-                                        Card = null
-                                    }
-                            },
+                        Votes = isObserver 
+                            ? new List<AgilePokerVote>()
+                            : new List<AgilePokerVote>
+                                {
+                                    new AgilePokerVote
+                                        {
+                                            User = new AgilePokerUser
+                                                {
+                                                    PreferredName = preferredUsername,
+                                                    UniqueName = User.Identity.Name
+                                                },
+                                            Card = null
+                                        }
+                                },
                         ShowVotes = false,
                         ScrumMaster = new AgilePokerUser
                             {
                                 PreferredName = preferredUsername,
                                 UniqueName = User.Identity.Name
-                            }
+                            },
+                        Observers = isObserver 
+                            ? new List<AgilePokerUser> 
+                                {
+                                    new AgilePokerUser
+                                    {
+                                        PreferredName = preferredUsername,
+                                        UniqueName = User.Identity.Name
+                                    }
+                                } 
+                            : new List<AgilePokerUser>()
                     });
+
+            
 
             var serializedRooms = JsonConvert.SerializeObject(agilePokerRooms);
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue,

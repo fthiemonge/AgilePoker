@@ -14,7 +14,7 @@
             <input type="submit" value="Show Votes" id="btnShowVotes" />
             <input type="submit" value="Clear Votes" id="btnClearVotes" />
         </div>
-        <div id="divHand">
+        <div id="divHand" style="display: none">
             @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
             {
                 <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
@@ -107,19 +107,34 @@
         function updateRoom(room) {
             serializedRoom = room;
             $updateTableBody.empty();
-            if (room != undefined && room.Votes != undefined) {
-                $.each(room.Votes, function () {
-                    $tr = $("<tr>");
-                    $tr.append($("<td>").text(this.User.PreferredName));
-                    $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
-                    $updateTableBody.append($tr);
-                });
-                if (room.ShowVotes) {
+            if (room != undefined) {
+                if (room.Votes != undefined) {
+                    $.each(room.Votes, function() {
+                        $tr = $("<tr>");
+                        $tr.append($("<td>").text(this.User.PreferredName));
+                        $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
+                        $updateTableBody.append($tr);
+                    });
+                }
+                if (room.ShowVotes || isObserver(room)) {
                     $('#divHand').hide();
                 } else {
                     $('#divHand').show();
                 }
             }
+        }
+        
+        function isObserver(room) {
+            var userName = $.trim('@User.Identity.Name'.replace(/\\/g, ''));
+            var returnVal = false;
+            $.each(room.Observers, function () {
+                var uniqueName = $.trim(this.UniqueName.replace(/\\/g, ''));
+                if (userName === uniqueName) {
+                    returnVal = true;
+                    return false;
+                }
+            });
+            return returnVal;
         }
 
         function vote(event) {
