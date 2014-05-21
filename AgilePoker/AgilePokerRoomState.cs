@@ -158,6 +158,19 @@ namespace AgilePoker
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
+        public void UpdateSubHeading(string roomName, string subHeading)
+        {
+            var room = GetRoom(roomName);
+            room.SubHeading = subHeading;
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            rooms[roomIndex] = room;
+
+            var serializedRooms = JsonConvert.SerializeObject(rooms);
+            HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
         public void ClearVotes(string roomName)
         {
             var room = GetRoom(roomName);

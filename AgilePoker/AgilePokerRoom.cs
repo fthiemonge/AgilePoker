@@ -5,6 +5,7 @@ namespace AgilePoker
     public class AgilePokerRoom
     {
         public string RoomName { get; set; }
+        public string SubHeading { get; set; }
         public List<AgilePokerVote> Votes { get; set; }
         public List<AgilePokerUser> Observers { get; set; }
         public Deck Deck { get; set; }
