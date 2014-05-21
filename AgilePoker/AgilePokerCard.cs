@@ -126,7 +126,7 @@ namespace AgilePoker
                             ,
                             new AgilePokerCard
                                 {
-                                    Sequence = 10,
+                                    Sequence = 11,
                                     TextValue = "?",
                                     CardName = "Question",
                                     Type = CardType.Text,
@@ -135,7 +135,7 @@ namespace AgilePoker
                             ,
                             new AgilePokerCard
                                 {
-                                    Sequence = 10,
+                                    Sequence = 12,
                                     CardName = "Coffee",
                                     Type = CardType.Image,
                                     PictureUrl = "../../Images/500px-Coffee_cup_icon.svg.png"
