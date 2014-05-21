@@ -118,11 +118,12 @@
             $updateTableBody.empty();
             if (room != undefined) {
                 if (room.Votes != undefined) {
+                    var smallCardCss = getVoteHtmlCss(room);
                     $.each(room.Votes, function() {
                         $tr = $("<tr>");
                         $tr.append($("<td>").text(this.User.PreferredName));
                         $tr.append("<td>&nbsp;</td>");
-                        $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
+                        $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes, smallCardCss)));
                         $updateTableBody.append($tr);
                     });
                 } 
@@ -182,13 +183,13 @@
             agilePokerHub.server.updateSubHeading(roomName, $('#txtSubHeading').val());
         }
 
-        function getVoteHtml(card, shouldShowVotes) {
-            $smallCard = $("<div>").addClass("smallCard");
+        function getVoteHtml(card, shouldShowVotes, smallCardCss) {
+            var $smallCard = $("<div>").addClass(smallCardCss);
             if (card == undefined) {
                 return $smallCard;
             }
             if (!shouldShowVotes) {
-                $smallCard.append($("<span>").text("\u2713"));
+                $smallCard.append($("<span>").text("\u2713")); // Check mark
             }
             else {
                 if (card.Type == "@Convert.ToInt32(AgilePoker.CardType.Image)") {
@@ -200,6 +201,20 @@
             }
             return $smallCard;
 
+        }
+        
+        function getVoteHtmlCss(room) {
+            if (!room.ShowVotes) {
+                return "smallCard";
+            }
+            var css = "smallCard";
+            $.each(room.Votes, function () {
+                if (this.Card.Type == "@Convert.ToInt32(AgilePoker.CardType.Text)" && this.Card.Representation.toString().length > 2) {
+                    css = "smallCardWide";
+                    return false;
+                }
+            });
+            return css;
         }
 
         function leaveRoom() {
