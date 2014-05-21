@@ -52,7 +52,7 @@
     @Html.LabelFor(model => model.CreateAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.CreateAsObserver)
     <br />
     <br />
-    <input type="submit" value="Create Room" name="action:CreateRoom"/>
+    <input type="submit" value="Create Room" class="btn-success"  name="action:CreateRoom"/>
     
     @Html.HiddenFor(model => model.SelectedExistingRoomName)
     <input type="submit" value="Join Room" name="action:JoinRoom" id="btnJoinRoom" style="visibility: hidden"/>

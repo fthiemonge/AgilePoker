@@ -8,7 +8,7 @@
 <h3 id="subHeading"></h3>
 <div id="divNewSubHeading" style="display: none">
     <input type="text" id="txtSubHeading" />
-    <input type="submit" value=" > " id="btnSubHeading" />
+    <input type="submit" class="btn-info" value=" > " id="btnSubHeading" />
 </div>
 <a id="lnkLeaveRoom">Leave Room</a><br/><br/>
 
@@ -16,8 +16,8 @@
     <div class="col-md-7 col-sm-7">
 
         <div id="divScrumMaster">
-            <input type="submit" value="Show Votes" id="btnShowVotes" />
-            <input type="submit" value="Clear Votes" id="btnClearVotes" />
+            <input type="submit" value="Show Votes" class="btn-primary" id="btnShowVotes" />
+            <input type="submit" value="Clear Votes" class="btn-info" id="btnClearVotes" />
         </div>
         <div id="divHand" style="display: none">
             @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
