@@ -47,6 +47,12 @@ namespace AgilePoker.Models
         [Required(ErrorMessage = "Your Name is required")]
         public string UserPreferredName { get; set; }
 
+        [Display(Name = "Create as an observer")]
+        public bool CreateAsObserver { get; set; }
+
+        [Display(Name = "Join as an observer")]
+        public bool JoinAsObserver { get; set; }
+
         #endregion
     }
 }

@@ -91,21 +91,40 @@ namespace AgilePoker
         public void LeaveRoom(string roomName, string uniqueUsername)
         {
             var room = GetRoom(roomName);
-            var voteIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
-            var isScrumMaser = (room.ScrumMaster.UniqueName == room.Votes[voteIndex].User.UniqueName);
+            var voterIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
+            var observerIndex = room.Observers.FindIndex(x => x.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
+            if (voterIndex >= 0)
+            {
+                var isScrumMaser = (room.ScrumMaster.UniqueName == room.Votes[voterIndex].User.UniqueName);
 
-            if (isScrumMaser)
-            {
-                room.Votes = new List<AgilePokerVote>();
+                if (isScrumMaser)
+                {
+                    room.Votes = new List<AgilePokerVote>();
+                    room.Observers = new List<AgilePokerUser>();
+                }
+                else
+                {
+                    room.Votes.RemoveAt(voterIndex);
+                }
             }
-            else
+            else if (observerIndex >= 0)
             {
-                room.Votes.RemoveAt(voteIndex);
+                var isScrumMaser = (room.ScrumMaster.UniqueName == room.Votes[voterIndex].User.UniqueName);
+
+                if (isScrumMaser)
+                {
+                    room.Votes = new List<AgilePokerVote>();
+                    room.Observers = new List<AgilePokerUser>();
+                }
+                else
+                {
+                    room.Observers.RemoveAt(observerIndex);
+                }
             }
 
             var rooms = GetPokerRoomsFromCache();
             var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
-            if (!room.Votes.Any())
+            if (!room.Votes.Any() && !room.Observers.Any())
             {
                 rooms.RemoveAt(roomIndex);
             }

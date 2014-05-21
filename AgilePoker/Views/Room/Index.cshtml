@@ -107,19 +107,29 @@
         function updateRoom(room) {
             serializedRoom = room;
             $updateTableBody.empty();
-            if (room != undefined && room.Votes != undefined) {
-                $.each(room.Votes, function () {
-                    $tr = $("<tr>");
-                    $tr.append($("<td>").text(this.User.PreferredName));
-                    $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
-                    $updateTableBody.append($tr);
-                });
-                if (room.ShowVotes) {
+            if (room != undefined) {
+                if (room.Votes != undefined) {
+                    $.each(room.Votes, function() {
+                        $tr = $("<tr>");
+                        $tr.append($("<td>").text(this.User.PreferredName));
+                        $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes)));
+                        $updateTableBody.append($tr);
+                    });
+                }
+                if (room.ShowVotes || isObserver(room)) {
                     $('#divHand').hide();
                 } else {
                     $('#divHand').show();
                 }
             }
+        }
+        
+        function isObserver(room) {
+            $.each(room.Observers, function () {
+                if (this.UniqueName == '@User.Identity.Name')
+                    return true;
+            });
+            return false;
         }
 
         function vote(event) {
