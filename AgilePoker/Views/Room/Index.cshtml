@@ -5,7 +5,7 @@
 <hgroup class="title">
     <h1>@Model.RoomName</h1>
 </hgroup>
-<h2 id="subHeading" style="display: none"></h2>
+<h3 id="subHeading"></h3>
 <div id="divNewSubHeading" style="display: none">
     <input type="text" id="txtSubHeading" />
     <input type="submit" value=" > " id="btnSubHeading" />
@@ -131,15 +131,11 @@
                 } else {
                     $('#divHand').show();
                 }
-                
+                $('#subHeading').empty();
+                $('#subHeading').append(room.SubHeading);
                 if (isScrumMaster(room)) {
                     $('#divNewSubHeading').show();
-                    $('#subHeading').hide();
                     $('#txtSubHeading').val(room.SubHeading);
-                } else {
-                    $('#divNewSubHeading').hide();
-                    $('#subHeading').show();
-                    $('#subHeading').val(room.SubHeading);
                 }
             }
         }
