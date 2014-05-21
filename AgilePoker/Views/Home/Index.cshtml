@@ -26,7 +26,7 @@
         <h3>Join an Existing Room</h3>
         if (Model.ExistingRoomNames.Count > 3)
         {
-            @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))
+            @Html.DropDownListFor(model => model.SelectedExistingRoomName, new SelectList(Model.ExistingRoomNames))<br/>
             @Html.LabelFor(model => model.JoinAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.JoinAsObserver)
             <br/>
             <br />

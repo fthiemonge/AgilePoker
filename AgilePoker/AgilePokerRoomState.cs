@@ -109,7 +109,7 @@ namespace AgilePoker
             }
             else if (observerIndex >= 0)
             {
-                var isScrumMaser = (room.ScrumMaster.UniqueName == room.Votes[voterIndex].User.UniqueName);
+                var isScrumMaser = (room.ScrumMaster.UniqueName == room.Observers[observerIndex].UniqueName);
 
                 if (isScrumMaser)
                 {

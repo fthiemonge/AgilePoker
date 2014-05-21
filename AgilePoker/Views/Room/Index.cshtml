@@ -14,7 +14,7 @@
             <input type="submit" value="Show Votes" id="btnShowVotes" />
             <input type="submit" value="Clear Votes" id="btnClearVotes" />
         </div>
-        <div id="divHand">
+        <div id="divHand" style="display: none">
             @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
             {
                 <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
@@ -125,11 +125,16 @@
         }
         
         function isObserver(room) {
+            var userName = $.trim('@User.Identity.Name'.replace(/\\/g, ''));
+            var returnVal = false;
             $.each(room.Observers, function () {
-                if (this.UniqueName == '@User.Identity.Name')
-                    return true;
+                var uniqueName = $.trim(this.UniqueName.replace(/\\/g, ''));
+                if (userName === uniqueName) {
+                    returnVal = true;
+                    return false;
+                }
             });
-            return false;
+            return returnVal;
         }
 
         function vote(event) {
