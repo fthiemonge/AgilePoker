@@ -178,7 +178,7 @@ namespace AgilePoker.Controllers
             return GetCachedRooms().Select(x => x.RoomName).ToList();
         }
 
-        private List<AgilePokerRoom> GetCachedRooms()
+        private IEnumerable<AgilePokerRoom> GetCachedRooms()
         {
             var roomNames = new List<AgilePokerRoom>();
             if (HttpRuntime.Cache[Constants.Cache.AgilePokerRooms] != null)

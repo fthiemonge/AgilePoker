@@ -36,7 +36,7 @@
         {
             foreach (var roomName in Model.ExistingRoomNames.OrderBy(x => x))
             {
-                 <a onclick="JoinRoom('@roomName')" href="#">@roomName</a><br/>
+                 <a onclick="JoinRoom('@Html.Encode(roomName)')" href="#">@roomName</a><br/>
             }
             @Html.LabelFor(model => model.JoinAsObserver) @:&nbsp; @Html.CheckBoxFor(model => model.JoinAsObserver)
         }
@@ -60,6 +60,7 @@
 
 <script type="text/javascript">
     function JoinRoom(roomName) {
+        roomName = $('<div />').html(roomName).text();
         $('#SelectedExistingRoomName').val(roomName);
         $('#btnJoinRoom').click();
     }
