@@ -130,7 +130,7 @@
                     var smallCardCss = getVoteHtmlCss(room);
                     $.each(room.Votes, function() {
                         $tr = $("<tr>");
-                        $tr.append($("<td>").text(this.User.PreferredName));
+                        $tr.append($("<td>").text(this.User.PreferredName)).attr('title', this.User.UniqueName);
                         $tr.append("<td>&nbsp;</td>");
                         $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes, smallCardCss)));
                         $playerHandsTableBody.append($tr);
