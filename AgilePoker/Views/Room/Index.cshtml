@@ -13,34 +13,32 @@
 <a id="lnkLeaveRoom">Leave Room</a><br/><br/>
 
 <div class="row">
-    <div class="col-md-7 col-sm-7">
-
-        <div id="divScrumMaster">
-            <input type="submit" value="Show Votes" class="btn-primary" id="btnShowVotes" />
-            <input type="submit" value="Clear Votes" class="btn-info" id="btnClearVotes" />
-        </div>
-        <div id="divHand" style="display: none">
-            @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
-            {
-                <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
-                    <div class="cardClickTarget" data-card-value="@card.Sequence"></div>
-                    <div class="cardTop"><span>@card.Representation</span></div>
-                    <div class="cardCenter">
-                        @if (card.Type == AgilePoker.CardType.Image)
-                        {
-                            <img src="@card.PictureUrl" title="@card.CardName" alt="@card.CardName" />
-                        }
-                        else
-                        {
-                            <span>@card.Representation</span>
-                        }
-                    </div>
-                    <div class="cardBottom"><span>@card.Representation</span></div>
-                    <div class="cardTarget" data-card-id="Card_@card.Sequence" data-card-value="@card.Sequence"></div>
-                    </div>
-            }
-        </div>
-
+    <div id="divScrumMaster" class="col-md-7 col-sm-7">
+        <input type="submit" value="Show Votes" class="btn-primary" id="btnShowVotes" />
+        <input type="submit" value="Clear Votes" class="btn-info" id="btnClearVotes" />
+    </div>
+</div>
+<div class="row">
+    <div id="divHand" style="display: none" class="col-md-7 col-sm-7">
+        @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
+        {
+            <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
+                <div class="cardClickTarget" data-card-value="@card.Sequence"></div>
+                <div class="cardTop"><span>@card.Representation</span></div>
+                <div class="cardCenter">
+                    @if (card.Type == AgilePoker.CardType.Image)
+                    {
+                        <img src="@card.PictureUrl" title="@card.CardName" alt="@card.CardName" />
+                    }
+                    else
+                    {
+                        <span>@card.Representation</span>
+                    }
+                </div>
+                <div class="cardBottom"><span>@card.Representation</span></div>
+                <div class="cardTarget" data-card-id="Card_@card.Sequence" data-card-value="@card.Sequence"></div>
+            </div>
+        }
     </div>
     <br/>
     <div class="col-md-5 col-sm-5">
@@ -215,7 +213,10 @@
             }
             var css = "smallCard";
             $.each(room.Votes, function () {
-                if (this.Card != undefined && this.Card.Type == "@Convert.ToInt32(AgilePoker.CardType.Text)" && this.Card.Representation.toString().length > 2) {
+                if (this.Card != undefined
+                    && this.Card.Type == "@Convert.ToInt32(AgilePoker.CardType.Text)"
+                    && this.Card.Representation.toString().length > 2
+                    && this.Card.Representation.toString() != "1/2") {
                     css = "smallCardWide";
                     return false;
                 }
