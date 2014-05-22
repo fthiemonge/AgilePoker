@@ -93,6 +93,17 @@ namespace AgilePoker.Hubs
             }
         }
 
+        public void Abstain(string roomName, string uniqueUsername)
+        {
+            lock (_lock)
+            {
+                roomName = HttpUtility.HtmlDecode(roomName);
+                _roomState.Abstain(roomName, uniqueUsername);
+
+                Clients.All.broadcastUpdateRoom(_roomState.GetRoom(roomName), false);
+            }
+        }
+
         public void UpdateSubHeading(string roomName, string subHeading)
         {
             lock (_lock)

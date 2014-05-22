@@ -88,6 +88,26 @@ namespace AgilePoker
             return card;
         }
 
+        public void Abstain(string roomName, string uniqueUsername)
+        {
+            var room = GetRoom(roomName);
+
+            var voteIndex = room.Votes.FindIndex(x => x.User.UniqueName.Replace("\\", "") == uniqueUsername.Replace("\\", ""));
+
+            room.Votes[voteIndex].Card = null;
+
+            var vote = room.Votes[voteIndex];
+            room.Votes.RemoveAt(voteIndex);
+            room.Votes.Insert(0, vote);
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            rooms[roomIndex] = room;
+
+            var serializedRooms = JsonConvert.SerializeObject(rooms);
+            HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
         public void LeaveRoom(string roomName, string uniqueUsername)
         {
             var room = GetRoom(roomName);

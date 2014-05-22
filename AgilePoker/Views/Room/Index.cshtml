@@ -165,10 +165,16 @@
 
         function vote(event) {
             var value = $(event.target).attr("data-card-value");
-            agilePokerHub.server.vote(roomName, '@User.Identity.Name', value).done(function (card) {
-                $(".selectedCard").removeClass("selectedCard");
-                $(event.target).parent().addClass("selectedCard");
-            });
+            if ($(".selectedCard") != undefined && $(".selectedCard").attr("data-card-value") == value) {
+                agilePokerHub.server.abstain(roomName, '@User.Identity.Name').done(function () {
+                    $(event.target).parent().removeClass("selectedCard");
+                });
+            } else {
+                agilePokerHub.server.vote(roomName, '@User.Identity.Name', value).done(function (card) {
+                    $(".selectedCard").removeClass("selectedCard");
+                    $(event.target).parent().addClass("selectedCard");
+                });
+            }
         }
 
         function showVotes() {
@@ -209,7 +215,7 @@
             }
             var css = "smallCard";
             $.each(room.Votes, function () {
-                if (this.Card.Type == "@Convert.ToInt32(AgilePoker.CardType.Text)" && this.Card.Representation.toString().length > 2) {
+                if (this.Card != undefined && this.Card.Type == "@Convert.ToInt32(AgilePoker.CardType.Text)" && this.Card.Representation.toString().length > 2) {
                     css = "smallCardWide";
                     return false;
                 }
