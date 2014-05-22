@@ -3,11 +3,11 @@
     ViewBag.Title = @Model.RoomName;
 }
 <hgroup class="title">
-    <h1>@Model.RoomName</h1>
+    <h1 id="RoomHeading">@Model.RoomName</h1>
 </hgroup>
 <h3 id="subHeading"></h3>
 <div id="divNewSubHeading" style="display: none">
-    <input type="text" id="txtSubHeading" />
+    <input type="text" id="txtSubHeading" title="Sub Heading" alt="Sub Heading" />
     <input type="submit" class="btn-info" value=" > " id="btnSubHeading" />
 </div>
 <a id="lnkLeaveRoom">Leave Room</a><br/><br/>
@@ -66,6 +66,7 @@
         var $updateTableBody = $updateTable.find('tbody');
         
         var serializedRoom = '';
+        var scrumMaster = false;
 
         $.connection.hub.start(function() {
             $('#btnVote').click(function() {
@@ -88,10 +89,20 @@
             $('.cardTarget').click(function (event) {
                 vote(event);
             });
-            
+
             $('#btnSubHeading').click(function() {
                 updateSubHeading();
-            })
+            });
+            
+            $("#txtSubHeading").keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#btnSubHeading").click();
+                }
+            });
+
+            $('#subHeading').click(function () {
+                editSubHeading();
+            });
         });
 
         function init() {
@@ -133,8 +144,13 @@
                 $('#subHeading').empty();
                 $('#subHeading').append(room.SubHeading);
                 if (isScrumMaster(room)) {
-                    $('#divNewSubHeading').show();
-                    $('#txtSubHeading').val(room.SubHeading);
+                    scrumMaster = true;
+                    var subHeading = $("#subHeading").html();
+                    if (subHeading == undefined || subHeading.trim().length == 0) {
+                        $('#divNewSubHeading').show();
+                    }
+                } else {
+                    scrumMaster = false;
                 }
             }
         }
@@ -184,7 +200,22 @@
         }
         
         function updateSubHeading() {
-            agilePokerHub.server.updateSubHeading(roomName, $('#txtSubHeading').val());
+            var newSubHeading = $('#txtSubHeading').val();
+            agilePokerHub.server.updateSubHeading(roomName, newSubHeading).done(function () {
+                if (newSubHeading != undefined && newSubHeading.trim().length > 0) {
+                    $("#subHeading").show();
+                    $("#divNewSubHeading").hide();
+                }
+            });
+        }
+        
+        function editSubHeading() {
+            if (scrumMaster) {
+                var subHeading = $("#subHeading").html();
+                $("#txtSubHeading").val(subHeading);
+                $("#subHeading").hide();
+                $("#divNewSubHeading").show();
+            }
         }
 
         function getVoteHtml(card, shouldShowVotes, smallCardCss) {
@@ -227,6 +258,8 @@
         function leaveRoom() {
             agilePokerHub.server.leaveRoom(roomName, '@User.Identity.Name');
         }
+        
+        
     });
 
 </script>
