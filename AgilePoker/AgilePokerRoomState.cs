@@ -178,6 +178,23 @@ namespace AgilePoker
             HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
         }
 
+        public void ChangeScrumMaster(string roomName, string uniqueUsername)
+        {
+            var room = GetRoom(roomName);
+            var user = (room.Votes.Select(x => x.User).Union(room.Observers).Distinct()).Where(x => x.UniqueName == uniqueUsername).ToList();
+            if (!user.Any())
+                return;
+
+            room.ScrumMaster = user[0];
+
+            var rooms = GetPokerRoomsFromCache();
+            var roomIndex = rooms.FindIndex(x => x.RoomName == roomName);
+            rooms[roomIndex] = room;
+
+            var serializedRooms = JsonConvert.SerializeObject(rooms);
+            HttpRuntime.Cache.Insert(Constants.Cache.AgilePokerRooms, serializedRooms, null, DateTime.MaxValue, new TimeSpan(2, 0, 0));
+        }
+
         public void UpdateSubHeading(string roomName, string subHeading)
         {
             var room = GetRoom(roomName);

@@ -115,6 +115,17 @@ namespace AgilePoker.Hubs
             }
         }
 
+        public void ChangeScrumMaster(string roomName, string uniqueUsername)
+        {
+            lock (_lock)
+            {
+                roomName = HttpUtility.HtmlDecode(roomName);
+                _roomState.ChangeScrumMaster(roomName, uniqueUsername);
+
+                Clients.All.broadcastUpdateRoom(_roomState.GetRoom(roomName), false);
+            }
+        }
+
         #endregion
     }
 }
