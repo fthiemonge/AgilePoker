@@ -7,7 +7,7 @@
 </hgroup>
 <h3 id="subHeading"></h3>
 <div id="divNewSubHeading" style="display: none">
-    <input type="text" id="txtSubHeading" title="Sub Heading" alt="Sub Heading" />
+    <input type="text" id="txtSubHeading" title="Sub Heading" alt="Sub Heading" placeholder="-- Enter Sub Heading --" />
     <input type="submit" class="btn-info" value="Save" id="btnSubHeading" />
 </div>
 <a id="lnkLeaveRoom">Leave Room</a><br/><br/>
@@ -19,7 +19,7 @@
     </div>
 </div>
 <div class="row">
-    <div id="divHand" style="display: none" class="col-md-7 col-sm-7">
+    <div id="divCards" style="display: none" class="col-md-7 col-sm-7">
         @foreach (var card in Model.PlayingCards.OrderBy(x => x.Sequence))
         {
             <div class="card" id="Card_@card.Sequence" data-card-value="@card.Sequence">
@@ -42,7 +42,7 @@
     </div>
     <br/>
     <div class="col-md-5 col-sm-5">
-        <div id="signalRUpdateTable">
+        <div id="divPlayerHands">
             <table border="1">
                 <thead>
                     <tr><th>Player</th><th>&nbsp;</th><th>Hand</th></tr>
@@ -62,8 +62,8 @@
 
         var agilePokerHub = $.connection.AgilePokerHub;
         var roomName = '@Model.RoomName';
-        var $updateTable = $('#signalRUpdateTable');
-        var $updateTableBody = $updateTable.find('tbody');
+        var $playerHandsDiv = $('#divPlayerHands');
+        var $playerHandsTableBody = $playerHandsDiv.find('tbody');
         
         var serializedRoom = '';
         var scrumMaster = false;
@@ -124,7 +124,7 @@
 
         function updateRoom(room) {
             serializedRoom = room;
-            $updateTableBody.empty();
+            $playerHandsTableBody.empty();
             if (room != undefined) {
                 if (room.Votes != undefined) {
                     var smallCardCss = getVoteHtmlCss(room);
@@ -133,13 +133,13 @@
                         $tr.append($("<td>").text(this.User.PreferredName));
                         $tr.append("<td>&nbsp;</td>");
                         $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes, smallCardCss)));
-                        $updateTableBody.append($tr);
+                        $playerHandsTableBody.append($tr);
                     });
                 } 
                 if (room.ShowVotes || isObserver(room)) {
-                    $('#divHand').hide();
+                    $('#divCards').hide();
                 } else {
-                    $('#divHand').show();
+                    $('#divCards').show();
                 }
                 $('#subHeading').empty();
                 $('#subHeading').append(room.SubHeading);
@@ -148,6 +148,13 @@
                     var subHeading = $("#subHeading").html();
                     if (subHeading == undefined || subHeading.trim().length == 0) {
                         $('#divNewSubHeading').show();
+                    } else {
+                        $("#subHeading").css('cursor', 'pointer');
+                        $("#subHeading").hover(function() {
+                            $("#subHeading").css('text-decoration', 'underline');
+                        }, function() {
+                            $("#subHeading").css('text-decoration', 'none');
+                        });
                     }
                 } else {
                     scrumMaster = false;
