@@ -8,7 +8,7 @@
 <h3 id="subHeading"></h3>
 <div id="divNewSubHeading" style="display: none">
     <input type="text" id="txtSubHeading" title="Sub Heading" placeholder="-- Enter Sub Heading --" />
-    <input type="submit" class="btn-info" value="Save" id="btnSubHeading" />
+    <input type="submit" class="btn-info" value="Save" id="btnSubHeading" hidden="hidden" />
 </div>
 <a id="lnkLeaveRoom">Leave Room</a>
 <br/>
@@ -21,7 +21,7 @@
         </div>
         <div class="float-right">
             <select id="selectChangeScrumMaster"></select>
-            <input type="submit" class="btn-info" value="Go" id="btnChangeScrumMaster" />
+            <input type="submit" class="btn-info" value="Go" id="btnChangeScrumMaster" hidden="hidden" />
         </div>
     </div>
 </div>
@@ -74,6 +74,7 @@
         
         var serializedRoom = '';
         var scrumMaster = false;
+        var userName = $.trim('@User.Identity.Name'.replace(/\\/g, ''));
 
         $.connection.hub.start(function() {
             $('#btnVote').click(function() {
@@ -114,6 +115,10 @@
             $('#btnChangeScrumMaster').click(function() {
                 changeScrumMaster();
             });
+            
+            $('#selectChangeScrumMaster').change(function () {
+                $("#btnChangeScrumMaster").click();
+            });
         });
 
         function init() {
@@ -142,19 +147,25 @@
                 $('#selectChangeScrumMaster').append($('<option disabled selected />').val("").text("New Scrum Master"));
                 if (room.Votes != undefined) {
                     var smallCardCss = getVoteHtmlCss(room);
-                    $.each(room.Votes, function() {
+                    $.each(room.Votes, function(index) {
                         $tr = $("<tr>");
                         $tr.append($("<td>").text(this.User.PreferredName)).attr('title', this.User.UniqueName);
                         $tr.append("<td>&nbsp;</td>");
                         $tr.append($("<td>").append(getVoteHtml(this.Card, room.ShowVotes, smallCardCss)));
                         $playerHandsTableBody.append($tr);
                         $('#selectChangeScrumMaster').append($('<option />').val(this.User.UniqueName).text(this.User.PreferredName));
+                        var uniqueName = $.trim(this.User.UniqueName.replace(/\\/g, ''));
+
+                        if (uniqueName === userName) {
+                            $("#selectChangeScrumMaster option:last").attr("selected", "selected");
+                        }
                     });
                 }
                 if (room.Observers != undefined) {
                     $.each(room.Observers, function () {
                         $('#selectChangeScrumMaster').append($('<option />'.val(this.UniqueName).text(this.PreferredName)));
                     });
+                    
                 }
                 if (room.ShowVotes || isObserver(room)) {
                     $('#divCards').hide();
@@ -180,7 +191,6 @@
         }
         
         function isObserver(room) {
-            var userName = $.trim('@User.Identity.Name'.replace(/\\/g, ''));
             var returnVal = false;
             $.each(room.Observers, function () {
                 var uniqueName = $.trim(this.UniqueName.replace(/\\/g, ''));
